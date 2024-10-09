@@ -3,7 +3,7 @@ import { collection, addDoc } from 'firebase/firestore';
 import db, { auth } from '../firebaseConfig'; // Import your Firestore and auth instances
 import emailjs from 'emailjs-com'; // Import emailjs
 import './Register.css'
-
+const mapsApiKey = process.env.REACT_APP_MAPS_API_KEY;
 const RegisterPlace = () => {
   const [address, setAddress] = useState('');
   const [charge, setCharge] = useState('');
@@ -89,7 +89,7 @@ const RegisterPlace = () => {
         });
       };
 
-      loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyBjTZXOhNWhf1Bu_ez9zanz0mAiDXJAG8I&callback=initMap&libraries=places");
+      loadScript(`https://maps.googleapis.com/maps/api/js?key=${mapsApiKey}&callback=initMap&libraries=places`);
     }
   }, [useLiveLocation]);
 

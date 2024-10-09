@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { FaDirections } from 'react-icons/fa';
 import './Map.css';
 import FetchLatLng from './FetchLatLng';
-
+const mapsApiKey = process.env.REACT_APP_MAPS_API_KEY;
+console.log(mapsApiKey)
 const Map = () => {
     const [places, setPlaces] = useState([]);
     const mapRef = useRef(null);
@@ -18,6 +19,7 @@ const Map = () => {
     };
 
     useEffect(() => {
+        console.log(mapsApiKey)
         const loadScript = (src) => {
             const script = document.createElement("script");
             script.src = src;
@@ -125,7 +127,7 @@ const Map = () => {
         });
         };
 
-        loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyBjTZXOhNWhf1Bu_ez9zanz0mAiDXJAG8I&callback=initMap&libraries=places");
+        loadScript(`https://maps.googleapis.com/maps/api/js?key=${mapsApiKey}&callback=initMap&libraries=places`);
     }, [places]); // Only run when places changes
 
     const searchNearbyPlaces = () => {

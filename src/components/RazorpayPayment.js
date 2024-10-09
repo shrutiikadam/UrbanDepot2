@@ -1,10 +1,10 @@
 // src/components/RazorpayPayment.js
 import React from 'react';
-
+const razorpayApiKey = process.env.REACT_APP_RAZORPAY_API_KEY;
 const RazorpayPayment = () => {
   const handlePayment = () => {
     const options = {
-      "key": "rzp_test_22YpxagEoYtImx",
+      "key": razorpayApiKey,
       "amount": "50000",
       "currency": "INR",
       "name": "UrbanDepot",

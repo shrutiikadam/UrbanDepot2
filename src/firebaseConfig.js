@@ -6,13 +6,13 @@ import { getDatabase } from "firebase/database";
 import 'firebase/database'; 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDaIHHzQTVdJEFSz8zCMddCjXIpctxsAc8",
-  authDomain: "urbandepot-cbda0.firebaseapp.com",
-  projectId: "urbandepot-cbda0",
-  storageBucket: "urbandepot-cbda0.appspot.com",
-  messagingSenderId: "252298620702",
-  appId: "1:252298620702:web:1db6581264aa09a07ca30f",
-  measurementId: "G-3GFT54BFGX"
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase app and authentication

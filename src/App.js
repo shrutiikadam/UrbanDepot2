@@ -32,13 +32,12 @@ const App = () => {
       <div>
         <Navbar userEmail={userEmail} />
         <Routes>
-          {/* <Route path="/" element={<Map />} />
+          <Route path="/" element={<Map />} />
           <Route path="/payment" element={<RazorpayPayment />} />
           <Route path="/register-place" element={<RegisterPlace />} />
           <Route path="/reservation" element={<ReservationForm />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/login" element={<Login />} /> */}
-          <Route path="/" element={<Map />}/>
+          <Route path="/login" element={<Login />} />
           <Route path="/demo" element={<FetchLatLng />} />
         </Routes>
       </div>
