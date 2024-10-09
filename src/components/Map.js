@@ -3,7 +3,6 @@ import { FaDirections } from 'react-icons/fa';
 import './Map.css';
 import FetchLatLng from './FetchLatLng';
 const mapsApiKey = process.env.REACT_APP_MAPS_API_KEY;
-console.log(mapsApiKey)
 const Map = () => {
     const [places, setPlaces] = useState([]);
     const mapRef = useRef(null);
@@ -19,7 +18,6 @@ const Map = () => {
     };
 
     useEffect(() => {
-        console.log(mapsApiKey)
         const loadScript = (src) => {
             const script = document.createElement("script");
             script.src = src;
