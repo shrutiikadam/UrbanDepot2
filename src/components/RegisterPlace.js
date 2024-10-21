@@ -1,46 +1,38 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { collection, addDoc } from 'firebase/firestore';
-import db, { auth } from '../firebaseConfig'; // Import your Firestore and auth instances
-import emailjs from 'emailjs-com'; // Import emailjs
-import './Register.css'
+import { doc, setDoc } from 'firebase/firestore';
+import db, { auth } from '../firebaseConfig';
+import emailjs from 'emailjs-com';
+import './Register.css';
 const mapsApiKey = process.env.REACT_APP_MAPS_API_KEY;
+
 const RegisterPlace = () => {
   const [address, setAddress] = useState('');
   const [charge, setCharge] = useState('');
   const [parkingNumber, setParkingNumber] = useState('');
   const [fromTime, setFromTime] = useState('');
   const [toTime, setToTime] = useState('');
+  const [fromDate, setFromDate] = useState(''); // State for "from" date
+  const [toDate, setToDate] = useState(''); // State for "to" date
   const [landmark, setLandmark] = useState({ lat: null, lng: null });
-  const [useLiveLocation, setUseLiveLocation] = useState(false); // Option to toggle live location
-  const [errorMessage, setErrorMessage] = useState(''); // State for error message
-  const [userEmail, setUserEmail] = useState(''); // State for storing user's email
+  const [useLiveLocation, setUseLiveLocation] = useState(false);
+  const [accessType, setAccessType] = useState('public');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [userEmail, setUserEmail] = useState('');
   const mapRef = useRef(null);
-  const searchBoxRef = useRef(null);
-  const markerRef = useRef(null); // Reference for the marker
+  const markerRef = useRef(null);
 
   useEffect(() => {
-    const user = auth.currentUser; // Get the current user
+    const user = auth.currentUser;
     if (user) {
-      setUserEmail(user.email); // Set the logged-in user's email
+      setUserEmail(user.email);
+      console.log('Logged-in user email:', user.email);
     }
   }, []);
 
   useEffect(() => {
-    if (useLiveLocation) {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
-          const { latitude, longitude } = position.coords;
-          setLandmark({ lat: latitude, lng: longitude });
-        }, (error) => {
-          console.error("Error fetching location:", error);
-          alert("Unable to retrieve your location. Please allow location access.");
-        });
-      } else {
-        alert("Geolocation is not supported by this browser.");
-      }
-    } else {
+    if (!useLiveLocation) {
       const loadScript = (src) => {
-        const script = document.createElement("script");
+        const script = document.createElement('script');
         script.src = src;
         script.async = true;
         script.defer = true;
@@ -49,27 +41,26 @@ const RegisterPlace = () => {
 
       window.initMap = () => {
         const map = new window.google.maps.Map(mapRef.current, {
-          center: { lat: 20.5937, lng: 78.9629 }, // Default centered location (India)
+          center: { lat: 20.5937, lng: 78.9629 },
           zoom: 5,
         });
 
-        const input = document.getElementById("pac-input");
+        const input = document.getElementById('pac-input');
         const autocomplete = new window.google.maps.places.Autocomplete(input);
-        autocomplete.bindTo("bounds", map);
+        autocomplete.bindTo('bounds', map);
 
         markerRef.current = new window.google.maps.Marker({
           map: map,
-          draggable: true, // Allow dragging the marker
+          draggable: true,
           anchorPoint: new window.google.maps.Point(0, -29),
         });
 
-        autocomplete.addListener("place_changed", () => {
+        autocomplete.addListener('place_changed', () => {
           const place = autocomplete.getPlace();
           if (!place.geometry) {
-            window.alert("No details available for input: '" + place.name + "'");
+            window.alert('No details available for input: ' + place.name);
             return;
           }
-
           if (place.geometry.viewport) {
             map.fitBounds(place.geometry.viewport);
           } else {
@@ -100,13 +91,13 @@ const RegisterPlace = () => {
     }
 
     const templateParams = {
-      to_email: userEmail, // User's email
+      to_email: userEmail,
       subject: "Place Registration Successful",
       message: `You have successfully registered a new place at address: ${address}.`,
     };
 
     try {
-      await emailjs.send('service_jqajw2l', 'template_od7gyfk', templateParams, 'lmjzjf2u4E96BI8-H');
+      await emailjs.send(, , templateParams, );
       console.log('Email sent successfully');
       alert("Email sent successfully!");
     } catch (error) {
@@ -118,8 +109,7 @@ const RegisterPlace = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check for missing required fields (except Parking Number)
-    if (!address || !charge || !fromTime || !toTime || !landmark.lat || !landmark.lng) {
+    if (!address || !charge || !fromTime || !toTime || !landmark.lat || !landmark.lng || !fromDate || !toDate) {
       setErrorMessage('Please fill in all the required fields.');
       return;
     }
@@ -127,17 +117,19 @@ const RegisterPlace = () => {
     const placeData = {
       address: address,
       charge: charge,
-      parking_number: parkingNumber || 'N/A', // Optional field
-      availability: { from: fromTime, to: toTime }, // Store from and to under one field called availability
-      landmark: landmark, // Store landmark (lat, lng)
+      parking_number: parkingNumber || 'N/A',
+      availability: { from: fromTime, to: toTime },
+      dateRange: { from: fromDate, to: toDate }, // Include date range
+      landmark: landmark,
+      accessType: accessType,
     };
 
     try {
-      await addDoc(collection(db, 'places'), placeData);
-      console.log('Place registered successfully');
-      setErrorMessage(''); // Clear error message on successful submission
+      await setDoc(doc(db, 'users', userEmail, 'register', `${address.replace(/\s+/g, '_')}-${Date.now()}`), placeData);
+      const placesDocRef = doc(db, 'places', address.replace(/\s+/g, '_'));
+      await setDoc(placesDocRef, placeData);
 
-      // Send email after successful registration
+      setErrorMessage('');
       handleSendEmail();
     } catch (error) {
       console.error('Error registering place:', error);
@@ -188,6 +180,28 @@ const RegisterPlace = () => {
           required
         />
 
+        <label>From Date:</label> {/* New "from date" field */}
+        <input
+          type="date"
+          value={fromDate}
+          onChange={(e) => setFromDate(e.target.value)}
+          required
+        />
+
+        <label>To Date:</label> {/* New "to date" field */}
+        <input
+          type="date"
+          value={toDate}
+          onChange={(e) => setToDate(e.target.value)}
+          required
+        />
+
+        <label>Access Type:</label>
+        <select value={accessType} onChange={(e) => setAccessType(e.target.value)}>
+          <option value="public">Public</option>
+          <option value="private">Private</option>
+        </select>
+
         <label>Landmark:</label>
         <div>
           <input
@@ -212,28 +226,20 @@ const RegisterPlace = () => {
         </div>
 
         {useLiveLocation ? (
-          <button type="button" onClick={() => setUseLiveLocation(true)}>Fetch Current Location</button>
+          <button type="button" onClick={() => setUseLiveLocation(true)}>
+            Fetch Current Location
+          </button>
         ) : (
-          <>
-            <input id="pac-input" ref={searchBoxRef} type="text" placeholder="Search Landmark" />
-            <div id="map" ref={mapRef} style={{ height: "300px", width: "100%", marginTop: "10px" }}></div>
-          </>
+          <div>
+            <input id="pac-input" className="controls" type="text" placeholder="Search Box" />
+            <div ref={mapRef} id="map" style={{ height: '400px', width: '100%' }}></div>
+          </div>
         )}
 
-        <button type="submit">Register</button>
+        {errorMessage && <p className="error">{errorMessage}</p>}
+
+        <button type="submit">Register Place</button>
       </form>
-
-      {/* Error message if required fields are missing */}
-      {errorMessage && (
-        <p style={{ color: 'red' }}>{errorMessage}</p>
-      )}
-
-      {/* Show selected location */}
-      {landmark.lat && landmark.lng && (
-        <p>
-          Selected Landmark: Latitude: {landmark.lat}, Longitude: {landmark.lng}
-        </p>
-      )}
     </div>
   );
 };

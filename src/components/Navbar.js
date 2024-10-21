@@ -25,6 +25,7 @@ const Navbar = ({ userEmail }) => {
         <Link to="/signup">SignUp</Link>
         <Link to="/login">Login</Link>
         <Link to="/demo">DEMO</Link>
+        <Link to="/profile">profile</Link>
       </div>
       {userEmail && (
         <div className="user-info">

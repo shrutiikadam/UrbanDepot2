@@ -1,6 +1,11 @@
 import React, { useState } from "react";
-import { auth, googleProvider } from "../firebaseConfig";  // Import googleProvider
-import { createUserWithEmailAndPassword, sendEmailVerification, signInWithPopup } from "firebase/auth";
+import { auth, googleProvider, db } from "../firebaseConfig"; // Import db from firebaseConfig
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  signInWithPopup,
+} from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore"; // Use setDoc to create a document
 import { useNavigate } from "react-router-dom";
 import '../App.css';
 
@@ -20,6 +25,13 @@ const SignUp = () => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+
+      // Save user data in Firestore using email as the document ID
+      await setDoc(doc(db, "users", email), {
+        uid: user.uid,  // Store the user UID
+        email: user.email, // Initialize with an empty array
+      });
+
       await sendEmailVerification(user);
       alert("Signup successful! Please check your email for verification.");
       navigate("/login");
@@ -32,8 +44,16 @@ const SignUp = () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
+
+      // Save user data in Firestore using email as the document ID
+      await setDoc(doc(db, "users", user.email), {
+        uid: user.uid,  // Store the user UID
+        email: user.email,
+        registeredPlaces: [], // Initialize with an empty array
+      });
+
       alert("Google signup successful!");
-      navigate("/");  // Redirect to homepage
+      navigate("/"); // Redirect to homepage
     } catch (error) {
       alert(`Google Sign-In Error: ${error.message}`);
     }

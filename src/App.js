@@ -11,6 +11,9 @@ import SignUp from './components/SignUp';
 import Login from './components/Login';
 import SendEmail from './components/SendEmail';
 import FetchLatLng from './components/FetchLatLng';
+import QRCode from './components/QRcodeGenerator';
+import Availability from './components/Availability';
+import Profile from './components/Profile';
 
 const App = () => {
   const [userEmail, setUserEmail] = useState("");
@@ -38,7 +41,8 @@ const App = () => {
           <Route path="/reservation" element={<ReservationForm />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/demo" element={<FetchLatLng />} />
+          <Route path="/demo" element={<Availability placeId="zGK4ChrgmCIEpU88d4dz"/>} />
+          <Route path="/profile" element={<Profile/>}/>
         </Routes>
       </div>
     </Router>

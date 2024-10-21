@@ -63,6 +63,7 @@ const Map = () => {
             autocomplete.bindTo("bounds", map);
 
             autocomplete.addListener("place_changed", () => {
+                const reservationDetails = place.reservations || [];
                 const place = autocomplete.getPlace();
                 if (!place.geometry) {
                     window.alert("No details available for input: '" + place.name + "'");
@@ -85,9 +86,15 @@ const Map = () => {
 
                 // Open the popup with the place details
                 setSelectedPlace({
+                    address:place.address,
+                    chargeAvailability:place.charge,
+                    availabilityFrom: place.availability_from, // New availability from time
+                    availabilityTo: place.availability_to,
                     name: place.name,
+                    id: place.id,
                     lat: place.geometry.location.lat(),
                     lng: place.geometry.location.lng(),
+                    reservations: reservationDetails,
                 });
                 setPopupVisible(true);
 
@@ -114,13 +121,22 @@ const Map = () => {
 
             // Add click event listener to the marker
             marker.addListener("click", () => {
+            
+                if (places.some(p => p.id === place.id)) {
                 // Set the selected place
+                const reservationDetails = place.reservations || [];
                 setSelectedPlace({
-                    name: place.id, // or any other property you want to display
+                    chargeAvailability:place.charge,
+                    availabilityFrom: place.availability.from, // New availability from time
+                    availabilityTo: place.availability.to, 
+                    address:place.address,
+                    id: place.id, // or any other property you want to display
                     lat: place.lat,
                     lng: place.lng,
+                    reservations: reservationDetails,
                 });
                 setPopupVisible(true);
+            }
             });
         });
         };
@@ -142,7 +158,8 @@ const Map = () => {
         service.textSearch(request, (results, status) => {
             if (status === window.google.maps.places.PlacesServiceStatus.OK) {
                 const place = results[0];
-                const destination = { lat: place.geometry.location.lat(), lng: place.geometry.location.lng() };
+                const destination = { lat: place.geometry.location.lat(), lng: place.geometry.location.lng(), chargeAvailability:place.charge,address:place.address,availabilityFrom: place.availability.from, 
+                    availabilityTo: place.availability.to  };
 
                 if (searchMarker) {
                     searchMarker.setMap(null);
@@ -154,12 +171,17 @@ const Map = () => {
                     title: place.name,
                 });
                 setSearchMarker(newSearchMarker);
-
+                const reservationDetails = place.reservations;
                 // Open the popup with the place details
                 setSelectedPlace({
                     name: place.name,
+                    id: place.id,
+                    availabilityFrom: place.availability.from, 
+                    availabilityTo: place.availability.to, 
+                    chargeAvailability:place.charge,
                     lat: place.geometry.location.lat(),
                     lng: place.geometry.location.lng(),
+                    reservations: reservationDetails,
                 });
                 setPopupVisible(true);
 
@@ -188,7 +210,7 @@ const Map = () => {
     };
     const proceedToBook = (place) => {
         // Assuming you want to pass the place information as query parameters
-        const query = `?lat=${place.lat}&lng=${place.lng}&name=${encodeURIComponent(place.name)}`;
+        const query = `?lat=${place.lat}&lng=${place.lng}&name=${encodeURIComponent(place.name)},&charge=${place.chargeAvailability}&id=${selectedPlace.id}`;
         window.location.href = `/reservation${query}`;
     };
 
@@ -277,9 +299,38 @@ const Map = () => {
                         boxShadow: '0 0 10px rgba(0,0,0,0.5)',
                     }}
                 >
-                    <h3>{selectedPlace.name}</h3>
+                    <h3>Address: {selectedPlace.address}</h3>
                     <p>Latitude: {selectedPlace.lat}</p>
                     <p>Longitude: {selectedPlace.lng}</p>
+                    <p>ID:{selectedPlace.id}</p>
+                    <p>Charge (Rs.): {selectedPlace.chargeAvailability}</p>
+                    <p>Availability From: {selectedPlace.availabilityFrom}</p> {/* Add availability from */}
+                    <p>Availability To: {selectedPlace.availabilityTo}</p>
+                    
+
+                     {/* Add availability to */}
+                     {selectedPlace.reservations && selectedPlace.reservations.length > 0 ? (
+    <div>
+    <h4>Reservations:</h4>
+    <ul>
+        {selectedPlace.reservations.map((reservation) => (
+            <p 
+                key={reservation.reservationId} 
+                style={{
+                    color: '#ff4d4d', // Use a softer red for readability
+                    fontWeight: 'bold',
+                    padding: '8px 0',
+                    borderBottom: '1px solid #ccc', // Optional: to visually separate entries
+                }}
+            >
+                🚫 Already booked slots: From {reservation.checkinTime} to {reservation.checkoutTime}
+            </p>
+        ))}
+    </ul>
+</div>
+) : (
+    <p>No reservations available.</p>
+)}
                     <button onClick={() => proceedToBook(selectedPlace)}>Proceed to Book</button>
                     <button onClick={getDirections}><FaDirections /> Get Directions</button>
                     <button onClick={() => setPopupVisible(false)}>Close</button>
@@ -291,3 +342,4 @@ const Map = () => {
 };
 
 export default Map;
+
