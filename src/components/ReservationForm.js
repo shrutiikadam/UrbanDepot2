@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { doc, getDoc, setDoc, query, where, getDocs, collection } from 'firebase/firestore'; 
 import { db, auth } from '../firebaseConfig'; 
-import styles from './Reservation.module.css'; 
+import styles from './ReservationForm.css'; 
 
 const ReservationForm = () => {
     const navigate = useNavigate();

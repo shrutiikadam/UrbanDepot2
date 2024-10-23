@@ -1,0 +1,40 @@
+.ticket-container {
+    background-image: url('../images/ticket.png'); /* Adjusted image path */
+    background-size: cover;  /* Ensure the background covers the entire div */
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 100%;  /* Make the width responsive */
+    max-width: 1200px; /* Adjust as needed */
+    aspect-ratio: 10/1; /* Keeps the ticket proportional */
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    color: #fff;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-top: 200px;
+    margin-left: 200px; /* Centers the ticket on the screen */
+    
+}
+
+.ticket-header {
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.ticket-detail {
+    font-size: 18px;
+    margin: 5px 0;
+}
+
+.ticket-footer {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 20px;
+}

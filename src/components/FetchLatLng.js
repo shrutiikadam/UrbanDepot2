@@ -1,4 +1,3 @@
-// src/FetchLatLng.js
 import React, { useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import PropTypes from 'prop-types';
@@ -14,9 +13,10 @@ const FetchLatLng = ({ onFetchPlaces }) => {
             const places = [];
 
             const today = new Date(); // Current date and time in local time
-        const formattedToday = today.toISOString().split('T')[0]; // Format as 'YYYY-MM-DD'
+            const formattedToday = today.toISOString().split('T')[0]; // Format as 'YYYY-MM-DD'
 
-        console.log(`Current date (formatted): ${formattedToday}`);
+            console.log(`Current date (formatted): ${formattedToday}`);
+            
             for (const doc of querySnapshot.docs) {
                 const data = doc.data();
                 const { lat, lng } = data.landmark || {}; 
@@ -29,17 +29,18 @@ const FetchLatLng = ({ onFetchPlaces }) => {
                 const dateRangeTo = data.dateRange?.to; // Assuming dateRange.to is in 'YYYY-MM-DD'
 
                 // Skip the place if dateRange.to is before today's date
-                if (dateRangeTo && new Date(dateRangeTo) < new Date(today)) {
+                if (dateRangeTo && new Date(dateRangeTo) < today) {
                     console.log(`Skipping ${data.placeName}: dateRange.to is before today.`);
                     continue; // Skip this place
                 }
 
-                const reservations = [];
+                // Fetch reservations for the current place
                 const reservationsSnapshot = await getDocs(collection(db, `places/${doc.id}/reservations`));
-                
+                const reservations = [];
+
                 // Log reservation data
                 console.log(`Fetching reservations for place ID: ${doc.id}`);
-                
+
                 reservationsSnapshot.forEach((reservationDoc) => {
                     const reservationData = reservationDoc.data();
                     const checkinDate = reservationData.checkinDate; // Assuming checkinDate is stored as a string in 'YYYY-MM-DD' format
@@ -47,7 +48,7 @@ const FetchLatLng = ({ onFetchPlaces }) => {
                     const checkoutTime = reservationData.checkoutTime || 'Not available';
 
                     // Check if today's date matches the checkinDate
-                    if (checkinDate === today) {
+                    if (checkinDate === formattedToday) {
                         reservations.push({
                             reservationId: reservationDoc.id,
                             checkinTime,
@@ -56,7 +57,7 @@ const FetchLatLng = ({ onFetchPlaces }) => {
                     }
                 });
 
-                // Log details for each place
+                // Log details for each place including reservations
                 console.log(`Fetched Place - ID: ${doc.id}, Lat: ${lat}, Lng: ${lng}, Address: ${address}, Reservations Count: ${reservations.length}`);
 
                 // Push place regardless of reservations
