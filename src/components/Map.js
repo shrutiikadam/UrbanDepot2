@@ -2,7 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import { FaDirections } from 'react-icons/fa';
 import './Map.css';
 import FetchLatLng from './FetchLatLng';
+
 const mapsApiKey = process.env.REACT_APP_MAPS_API_KEY;
+
 const Map = () => {
     const [places, setPlaces] = useState([]);
     const mapRef = useRef(null);
@@ -14,7 +16,7 @@ const Map = () => {
     const [selectedPlace, setSelectedPlace] = useState({});
 
     const onFetchPlaces = (newPlaces) => {
-        setPlaces(newPlaces); // Update the places state with the fetched data
+        setPlaces(newPlaces);
     };
 
     useEffect(() => {
@@ -46,7 +48,7 @@ const Map = () => {
                         icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
                     });
                     setUserMarker(userMarkerInstance);
-                    map.setCenter(userLocation); // Center the map on the user's location
+                    map.setCenter(userLocation);
                 });
             } else {
                 alert("Geolocation is not supported by this browser.");
@@ -63,7 +65,6 @@ const Map = () => {
             autocomplete.bindTo("bounds", map);
 
             autocomplete.addListener("place_changed", () => {
-                const reservationDetails = place.reservations || [];
                 const place = autocomplete.getPlace();
                 if (!place.geometry) {
                     window.alert("No details available for input: '" + place.name + "'");
@@ -84,65 +85,46 @@ const Map = () => {
                 });
                 setSearchMarker(newSearchMarker);
 
-                // Open the popup with the place details
                 setSelectedPlace({
-                    address:place.address,
-                    chargeAvailability:place.charge,
-                    availabilityFrom: place.availability_from, // New availability from time
+                    address: place.formatted_address,
+                    chargeAvailability: place.charge,
+                    availabilityFrom: place.availability_from,
                     availabilityTo: place.availability_to,
                     name: place.name,
                     id: place.id,
                     lat: place.geometry.location.lat(),
                     lng: place.geometry.location.lng(),
-                    reservations: reservationDetails,
+                    reservations: place.reservations || [],
                 });
                 setPopupVisible(true);
-
-                // Use setTimeout to ensure the elements exist before setting their values
-                setTimeout(() => {
-                    const latInput = document.getElementById("place-lat");
-                    const lngInput = document.getElementById("place-lng");
-
-                    if (latInput && lngInput) {
-                        latInput.value = place.geometry.location.lat();
-                        lngInput.value = place.geometry.location.lng();
-                    }
-                }, 0); // Delay execution slightly to ensure elements are present
             });
 
-            // Set markers for fetched places
-            // Set markers for fetched places
-        places.forEach(place => {
-            const marker = new window.google.maps.Marker({
-                position: { lat: place.lat, lng: place.lng },
-                map: map,
-                title: place.id, // Optional: Title can be the document ID or name
-            });
-
-            // Add click event listener to the marker
-            marker.addListener("click", () => {
-            
-                if (places.some(p => p.id === place.id)) {
-                // Set the selected place
-                const reservationDetails = place.reservations || [];
-                setSelectedPlace({
-                    chargeAvailability:place.charge,
-                    availabilityFrom: place.availability.from, // New availability from time
-                    availabilityTo: place.availability.to, 
-                    address:place.address,
-                    id: place.id, // or any other property you want to display
-                    lat: place.lat,
-                    lng: place.lng,
-                    reservations: reservationDetails,
+            places.forEach(place => {
+                const marker = new window.google.maps.Marker({
+                    position: { lat: place.lat, lng: place.lng },
+                    map: map,
+                    title: place.id,
                 });
-                setPopupVisible(true);
-            }
+
+                marker.addListener("click", () => {
+                    const reservationDetails = place.reservations || [];
+                    setSelectedPlace({
+                        chargeAvailability: place.charge,
+                        availabilityFrom: place.availability.from,
+                        availabilityTo: place.availability.to,
+                        address: place.address,
+                        id: place.id,
+                        lat: place.lat,
+                        lng: place.lng,
+                        reservations: reservationDetails,
+                    });
+                    setPopupVisible(true);
+                });
             });
-        });
         };
 
         loadScript(`https://maps.googleapis.com/maps/api/js?key=${mapsApiKey}&callback=initMap&libraries=places`);
-    }, [places]); // Only run when places changes
+    }, [places]);
 
     const searchNearbyPlaces = () => {
         const searchInput = document.getElementById("pac-input").value;
@@ -158,8 +140,14 @@ const Map = () => {
         service.textSearch(request, (results, status) => {
             if (status === window.google.maps.places.PlacesServiceStatus.OK) {
                 const place = results[0];
-                const destination = { lat: place.geometry.location.lat(), lng: place.geometry.location.lng(), chargeAvailability:place.charge,address:place.address,availabilityFrom: place.availability.from, 
-                    availabilityTo: place.availability.to  };
+                const destination = {
+                    lat: place.geometry.location.lat(),
+                    lng: place.geometry.location.lng(),
+                    chargeAvailability: place.charge,
+                    address: place.formatted_address,
+                    availabilityFrom: place.availability.from,
+                    availabilityTo: place.availability.to,
+                };
 
                 if (searchMarker) {
                     searchMarker.setMap(null);
@@ -172,13 +160,12 @@ const Map = () => {
                 });
                 setSearchMarker(newSearchMarker);
                 const reservationDetails = place.reservations;
-                // Open the popup with the place details
                 setSelectedPlace({
                     name: place.name,
                     id: place.id,
-                    availabilityFrom: place.availability.from, 
-                    availabilityTo: place.availability.to, 
-                    chargeAvailability:place.charge,
+                    availabilityFrom: place.availability.from,
+                    availabilityTo: place.availability.to,
+                    chargeAvailability: place.charge,
                     lat: place.geometry.location.lat(),
                     lng: place.geometry.location.lng(),
                     reservations: reservationDetails,
@@ -194,9 +181,12 @@ const Map = () => {
                 directionsService.route(requestDirections, (result, status) => {
                     if (status === window.google.maps.DirectionsStatus.OK) {
                         directionsRenderer.setDirections(result);
+                        // Show directions panel
+                        document.getElementById("directions-panel").style.display = "block";
+                        // Populate the directions panel
+                        const steps = result.routes[0].legs[0].steps.map(step => `<li>${step.instructions}</li>`).join('');
                         document.getElementById("directions-panel").innerHTML =
-                            "<h3>Directions</h3>" +
-                            result.routes[0].legs[0].steps.map((step) => `<p>${step.instructions}</p>`).join("");
+                            `<h3>Directions</h3><ul>${steps}</ul><button onClick={closeDirectionsPanel}>Close</button>`;
                     } else {
                         window.alert("Directions request failed due to " + status);
                     }
@@ -205,12 +195,16 @@ const Map = () => {
         });
     };
 
+    const closeDirectionsPanel = () => {
+        document.getElementById("directions-panel").style.display = "none";
+    };
+
     const closeRegisterForm = () => {
         document.getElementById("register-form").style.display = "none";
     };
+
     const proceedToBook = (place) => {
-        // Assuming you want to pass the place information as query parameters
-        const query = `?lat=${place.lat}&lng=${place.lng}&name=${encodeURIComponent(place.name)},&charge=${place.chargeAvailability}&id=${selectedPlace.id}`;
+        const query = `?lat=${place.lat}&lng=${place.lng}&name=${encodeURIComponent(place.name)}&charge=${place.chargeAvailability}&id=${selectedPlace.id}&address=${place.address}`;
         window.location.href = `/reservation${query}`;
     };
 
@@ -219,15 +213,18 @@ const Map = () => {
             const requestDirections = {
                 origin: userMarker.getPosition(),
                 destination: { lat: selectedPlace.lat, lng: selectedPlace.lng },
-                travelMode: window.google.maps.TravelMode.DRIVING, // Adjust travel mode as needed
+                travelMode: window.google.maps.TravelMode.DRIVING,
             };
 
             directionsService.route(requestDirections, (result, status) => {
                 if (status === window.google.maps.DirectionsStatus.OK) {
                     directionsRenderer.setDirections(result);
+                    // Show directions panel
+                    document.getElementById("directions-panel").style.display = "block";
+                    // Populate the directions panel
+                    const steps = result.routes[0].legs[0].steps.map(step => `<li>${step.instructions}</li>`).join('');
                     document.getElementById("directions-panel").innerHTML =
-                        "<h3>Directions</h3>" +
-                        result.routes[0].legs[0].steps.map((step) => `<p>${step.instructions}</p>`).join("");
+                        `<h3>Directions</h3><ul>${steps}</ul><button onClick={closeDirectionsPanel}>Close</button>`;
                 } else {
                     window.alert("Directions request failed due to " + status);
                 }
@@ -237,30 +234,57 @@ const Map = () => {
 
     return (
         <div style={{ position: "relative" }}>
-            <div id="map" ref={mapRef} style={{ height: "500px", width: "100%" }}></div>
-            <input
+            <div id="map" ref={mapRef} >
+            </div>
+            <div className="map-search">
+            <h5>Find your perfect parking spot on UrbanDepot </h5>
+            <p>Search for nearby parking space according to their availability</p>
+            <div className="park-search-div"><label ><span>Locality for parking</span><input
                 id="pac-input"
                 type="text"
-                placeholder="Search Box"
-                style={{
-                    position: "absolute",
-                    top: "10px",
-                    left: "10px",
-                    zIndex: 1,
-                    width: "200px",
-                    padding: "5px",
-                    borderRadius: "5px",
-                }}
-            />
-            <select id="travel-mode" style={{ position: "absolute", top: "50px", left: "10px" }}>
+                placeholder="Anywhere"
+            /></label></div>
+            <div className="map-row-2">
+            <label><span>Type of Parking</span> 
+            <select id="type-parking">
+            <option value="All">All</option>
+                <option value="Public">Public</option>
+                <option value="Private">Private</option>  
+               </select> </label>
+            <div className="trave-mode"><label><span>Travel-mode</span>
+            <select id="travel-mode" >
                 <option value="DRIVING">Driving</option>
                 <option value="WALKING">Walking</option>
                 <option value="BICYCLING">Bicycling</option>
                 <option value="TRANSIT">Transit</option>
-            </select>
-            <button onClick={searchNearbyPlaces} style={{ position: "absolute", top: "100px", left: "10px" }}>
+            </select></label></div>
+            </div>
+            <div className="date">
+            <div className="from-date">
+                <label>From Date:</label>
+                <input type="date" id="from-date" />
+            </div>
+
+            <div className="to-date">
+                <label>To Date:</label>
+                <input type="date" id="to-date" />
+            </div>
+            </div>
+            <div className="time">
+            <div className="from-time">
+                <label>From Time:</label>
+                <input type="time" id="from-time" />
+            </div>
+
+            <div className="to-time">
+                <label>To Time:</label>
+                <input type="time" id="to-time" />
+            </div>
+            </div>
+            <button onClick={searchNearbyPlaces} >
                 Search Nearby
             </button>
+            </div>
 
             <div
                 id="directions-panel"
@@ -342,4 +366,3 @@ const Map = () => {
 };
 
 export default Map;
-

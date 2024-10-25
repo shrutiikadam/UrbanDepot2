@@ -26,7 +26,7 @@ const SendEmail = () => {
       message: "This is a test message sent to you!",
     };
 
-    emailjs.send(, , templateParams, )
+    emailjs.send('service_47vx99l', 'template_jv1q5vo', templateParams, '-gQSz38aytXtBOMib')
       .then((response) => {
         console.log('Email sent successfully:', response);
         alert("Email sent successfully!");

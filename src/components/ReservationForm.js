@@ -1,199 +1,379 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { doc, getDoc, setDoc, query, where, getDocs, collection } from 'firebase/firestore'; 
-import { db, auth } from '../firebaseConfig'; 
-import styles from './ReservationForm.css'; 
+import { useLocation, useNavigate } from 'react-router-dom';
+import { db } from '../firebaseConfig'; // Import Firebase configuration
+import { doc, setDoc, getDocs, collection, query, where } from 'firebase/firestore'; // Import Firestore methods
+import './ReservationForm.css';
 
-const ReservationForm = () => {
-    const navigate = useNavigate();
-    const [checkinTime, setCheckinTime] = useState('');
-    const [checkoutTime, setCheckoutTime] = useState('');
-    const [checkinDate, setCheckinDate] = useState('');
-    const [checkoutDate, setCheckoutDate] = useState('');
-    const [vehicleType, setVehicleType] = useState('');
-    const [parkingSpot, setParkingSpot] = useState('');
-    const [licensePlate, setLicensePlate] = useState('');
-    const [paymentMethod, setPaymentMethod] = useState('');
-    const [charge, setCharge] = useState('');
-    const [id, setId] = useState('');
-    const [userEmail, setUserEmail] = useState('');
-    
-    // New fields
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [contactNumber, setContactNumber] = useState('');
-    const [countryCode, setCountryCode] = useState('+91');
-    const [totalAmount, setTotalAmount] = useState('');
+const generateTimeOptions = () => {
+  const options = [];
+  const startTime = 0;
+  const endTime = 24;
+  for (let hour = startTime; hour < endTime; hour++) {
+    for (let minute of [0, 30]) {
+      const time = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+      options.push(time);
+    }
+  }
+  return options;
+};
 
-    useEffect(() => {
-        const queryParams = new URLSearchParams(window.location.search);
-        const chargeAmount = queryParams.get('charge');
-        const fetchedId = queryParams.get('id');  
-        setId(fetchedId);
+// Function to get the current local date in YYYY-MM-DD format
+const getCurrentLocalDate = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  
+  return `${year}-${month}-${day}`;
+};
 
-        const user = auth.currentUser;
-        if (user) {
-            setUserEmail(user.email);
-            setEmail(user.email);  // Update email state
-        }
+// Country codes list
+const countryCodes = [
+  { code: '+1', name: 'United States' },
+  { code: '+91', name: 'India' },
+  { code: '+44', name: 'United Kingdom' },
+  { code: '+61', name: 'Australia' },
+  { code: '+81', name: 'Japan' },
+  // Add more country codes as needed
+];
 
-        if (fetchedId) {
-            const fetchCharge = async () => {
-                const placeDocRef = doc(db, 'places', fetchedId);
-                const placeDoc = await getDoc(placeDocRef);
-                if (placeDoc.exists()) {
-                    const placeData = placeDoc.data();
-                    setCharge(placeData.charge); 
-                    setTotalAmount(placeData.charge); // Set total amount
-                } else {
-                    console.error("Place document not found for ID: ", fetchedId);
-                }
-            };
-            fetchCharge();
-        }
+const ReservationForm = () => { // Removed userEmail from props
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  // Parse URL parameters
+  const queryParams = new URLSearchParams(location.search);
+  const addressFromURL = queryParams.get('address') || ''; // Get address from URL
+  const placeFromURL = queryParams.get('id') || ''; // Get place ID from URL
 
-        if (chargeAmount && !isNaN(chargeAmount)) {
-            setCharge(chargeAmount);
-            setTotalAmount(chargeAmount);
-        }
-    }, [id]);
 
-    // Function to check if the time slot is already booked
-    const isSlotBooked = async () => {
-        const checkinDateTime = new Date(`${checkinDate}T${checkinTime}`);
-        const checkoutDateTime = new Date(`${checkoutDate}T${checkoutTime}`);
 
-        const reservationsRef = collection(db, 'places', id, 'reservations');
-        const reservationQuery = query(reservationsRef, where('checkinDate', '==', checkinDate));
+  const checkForOverlappingReservations = async () => {
+    const reservationsRef = collection(db, 'places', formData.place, 'reservations');
+    const q = query(reservationsRef, where("checkinDate", "==", formData.checkinDate));
+    const snapshot = await getDocs(q);
 
-        const querySnapshot = await getDocs(reservationQuery);
-        let timeConflict = false;
+    let isOverlapping = false;
+    snapshot.forEach((doc) => {
+      const existingReservation = doc.data();
+      const existingCheckinTime = new Date(`${existingReservation.checkinDate}T${existingReservation.checkinTime}`);
+      const existingCheckoutTime = new Date(`${existingReservation.checkoutDate}T${existingReservation.checkoutTime}`);
+      const newCheckinTime = new Date(`${formData.checkinDate}T${formData.checkinTime}`);
+      const newCheckoutTime = new Date(`${formData.checkoutDate}T${formData.checkoutTime}`);
 
-        querySnapshot.forEach((doc) => {
-            const reservation = doc.data();
-            const existingCheckinTime = new Date(`${reservation.checkinDate}T${reservation.checkinTime}`);
-            const existingCheckoutTime = new Date(`${reservation.checkoutDate}T${reservation.checkoutTime}`);
+      // Check for overlapping time
+      if (
+        (newCheckinTime >= existingCheckinTime && newCheckinTime < existingCheckoutTime) || // New check-in overlaps existing
+        (newCheckoutTime > existingCheckinTime && newCheckoutTime <= existingCheckoutTime) || // New check-out overlaps existing
+        (newCheckinTime <= existingCheckinTime && newCheckoutTime >= existingCheckoutTime) // New period completely overlaps existing
+      ) {
+        isOverlapping = true;
+      }
+    });
 
-            // Check if the new reservation's time overlaps with any existing reservations
-            if ((checkinDateTime >= existingCheckinTime && checkinDateTime < existingCheckoutTime) ||
-                (checkoutDateTime > existingCheckinTime && checkoutDateTime <= existingCheckoutTime)) {
-                timeConflict = true;
-            }
-        });
+    return isOverlapping;
+  };
 
-        return timeConflict;
+
+  const [formData, setFormData] = useState({
+    checkinDate: getCurrentLocalDate(),
+    checkoutDate: getCurrentLocalDate(),
+    checkinTime: '',
+    checkoutTime: '',
+    vehicleType: '',
+    licensePlate: '',
+    paymentMethod: '',
+    name: '',
+    email: '', // Start with an empty string instead of userEmail
+    address: addressFromURL, // Autofill address here
+    place: placeFromURL, // Autofill place here
+    contactNumber: '',
+    countryCode: '+91',
+    termsAccepted: false,
+  });
+
+  const timeOptions = generateTimeOptions();
+
+  // Update checkout date based on checkin date change
+  const handleDateChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+      ...(name === 'checkinDate' && { checkoutDate: value }),
+    }));
+  };
+
+  // Update checkout time based on checkin time
+  const handleTimeChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+      ...(name === 'checkinTime' && { checkoutTime: '' }),
+    }));
+  };
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log('Form Submitted');
+    console.log('Form Data:', formData);
+    // Validate contact number
+    const cleanContactNumber = formData.contactNumber.replace(/\D/g, '');
+    if (cleanContactNumber.length !== 10) {
+      alert('Please enter a valid 10-digit contact number.');
+      return;
+    }
+
+
+    const isOverlapping = await checkForOverlappingReservations();
+    if (isOverlapping) {
+      alert('This time slot is already booked. Please choose a different time.');
+      return; // Exit if there's an overlap
+    }
+    const reservationData = {
+      checkinDate: formData.checkinDate,
+      checkoutDate: formData.checkoutDate,
+      checkinTime: formData.checkinTime,
+      checkoutTime: formData.checkoutTime,
+      vehicleType: formData.vehicleType,
+      licensePlate: formData.licensePlate,
+      paymentMethod: formData.paymentMethod,
+      name: formData.name,
+      email: formData.email, // User-inputted email
+      address: formData.address,
+      place: formData.place,
+      contactNumber: formData.contactNumber,
+      countryCode: formData.countryCode,
+      termsAccepted: formData.termsAccepted,
+      checkin: `${formData.checkinDate} ${formData.checkinTime}`, // Combine date and time
+      checkout: `${formData.checkoutDate} ${formData.checkoutTime}`, // Combine date and time
+      createdAt: new Date().toISOString(), // Add timestamp
+      total_amount: "50000", // Example amount in paise
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    try {
+      const licensePlateId = `${formData.licensePlate}-${Date.now()}`;
 
-        // Validate check-in and check-out times
-        if (new Date(`${checkinDate}T${checkinTime}`) >= new Date(`${checkoutDate}T${checkoutTime}`)) {
-            alert("Check-out time must be after check-in time.");
-            return;
-        }
+      // Save reservation details to 'places' subcollection in Firestore
+      await setDoc(doc(db, 'places', formData.place, 'reservations', licensePlateId), reservationData);
 
-        // Check if the slot is already booked
-        const slotConflict = await isSlotBooked();
-        if (slotConflict) {
-            alert("This slot is already booked for the selected time range.");
-            return;
-        }
+      // Save reservation details to 'users' subcollection in Firestore
+      await setDoc(doc(db, 'users', formData.email, 'bookings', licensePlateId), reservationData);
 
-        // Create a booking object
-        const bookingDetails = {
-            name,
-            email,
-            contactNumber,
-            countryCode,
-            checkinTime,
-            checkoutTime,
-            checkinDate,
-            checkoutDate,
-            vehicleType,
-            parkingSpot,
-            licensePlate,
-            paymentMethod,
-            total_amount: totalAmount, // Total amount
-            createdAt: new Date().toISOString() // Add a timestamp
-        };
-        console.log('Saving to Firestore with:', {
-            id,
-            userEmail,
-            bookingDetails,
-        });
+      console.log("Reservation successfully saved!");
 
-        try {
-            const bookingId = `${licensePlate}-${Date.now()}`;
+      // Navigate to the payment page
+      navigate('/payment', { state: {address: formData.address, reservationData } });
+    } catch (error) {
+      console.error("Error saving reservation: ", error);
+      alert("Error occurred while saving the reservation. Please try again.");
+    }
+  };
 
-            // Save booking details to the subcollection
-            await setDoc(doc(db, 'places', id, 'reservations', bookingId), bookingDetails);
-            const userDocRef = doc(db, 'users', userEmail);  // Correct path for the user
-    const bookingCollectionRef = collection(userDocRef, 'bookings');  // Subcollection
-
-    // Save the booking details in the user's 'bookings' subcollection
-    await setDoc(doc(bookingCollectionRef, bookingId), bookingDetails);
-            navigate(`/payment?amount=${totalAmount}`);
-        } catch (error) {
-            console.error("Error saving booking details: ", error);
-            alert("Error saving booking details. Please try again.");
-        }
-    };
-
-    return (
-        <div className={styles.container}>
-            <h2>Parking Reservation Form</h2>
-            <form onSubmit={handleSubmit}>
-                <label>Name:</label>
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
-                
-                <label>Email:</label>
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                
-                <label>Contact Number:</label>
-                <input type="text" value={contactNumber} onChange={(e) => setContactNumber(e.target.value)} required />
-                
-                <label>Country Code:</label>
-                <input type="text" value={countryCode} onChange={(e) => setCountryCode(e.target.value)} required />
-                
-                <label>Check-In Date:</label>
-                <input type="date" value={checkinDate} onChange={(e) => setCheckinDate(e.target.value)} required />
-
-                <label>Check-In Time:</label>
-                <input type="time" value={checkinTime} onChange={(e) => setCheckinTime(e.target.value)} required />
-                
-                <label>Check-Out Date:</label>
-                <input type="date" value={checkoutDate} onChange={(e) => setCheckoutDate(e.target.value)} required />
-                
-                <label>Check-Out Time:</label>
-                <input type="time" value={checkoutTime} onChange={(e) => setCheckoutTime(e.target.value)} required />
-                
-                <label>Vehicle Type:</label>
-                <input type="text" value={vehicleType} onChange={(e) => setVehicleType(e.target.value)} required />
-
-                <label>Parking Spot:</label>
-                <input type="text" value={parkingSpot} onChange={(e) => setParkingSpot(e.target.value)} required />
-
-                <label>License Plate:</label>
-                <input type="text" value={licensePlate} onChange={(e) => setLicensePlate(e.target.value)} required />
-
-                <label>Payment Method:</label>
-                <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)} required>
-                    <option value="">Select Payment Method</option>
-                    <option value="credit_card">Credit Card</option>
-                    <option value="debit_card">Debit Card</option>
-                    <option value="paypal">PayPal</option>
-                    <option value="net-banking">Net Banking</option>
-                </select>
-
-                <div>
-                    <p>Total Charge: Rs. {totalAmount}</p>
-                </div>
-
-                <button type="submit">Confirm Reservation</button>
-            </form>
+  return (
+    <div className="container">
+      <h2>Parking Reservation Form</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label>Name:</label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+          />
         </div>
-    );
+
+        <div className="form-group">
+          <label>Email:</label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Contact Number:</label>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <select
+              name="countryCode"
+              value={formData.countryCode}
+              onChange={handleChange}
+              style={{ marginRight: '1rem', width: '100px' }}
+            >
+              {countryCodes.map((country) => (
+                <option key={country.code} value={country.code}>
+                  {country.code} {country.name}
+                </option>
+              ))}
+            </select>
+            <input
+              type="tel"
+              name="contactNumber"
+              value={formData.contactNumber}
+              onChange={handleChange}
+              placeholder="Enter your contact number"
+              required
+              pattern="\d{10}"
+            />
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label>Address:</label>
+            <input
+              type="text"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              placeholder="Enter your address"
+              required
+              readOnly // Make it read-only to prevent editing
+            />
+          </div>
+          <div className="form-group">
+            <label>Place:</label>
+            <input
+              type="text"
+              name="place"
+              value={formData.place}
+              onChange={handleChange}
+              placeholder="Enter the place (e.g., Mumbai, Pune)"
+              required
+              readOnly // Make it read-only to prevent editing
+            />
+          </div>
+        </div>
+
+        <div className="date-row">
+          <div className="form-group">
+            <label>From Date:</label>
+            <input
+              type="date"
+              name="checkinDate"
+              value={formData.checkinDate}
+              onChange={handleDateChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>To Date:</label>
+            <input
+              type="date"
+              name="checkoutDate"
+              value={formData.checkoutDate}
+              min={formData.checkinDate}
+              onChange={handleDateChange}
+              required
+            />
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label>Check-In Time:</label>
+          <select
+            name="checkinTime"
+            value={formData.checkinTime}
+            onChange={handleTimeChange}
+            required
+          >
+            <option value="">Select Check-In Time</option>
+            {timeOptions.map((time) => (
+              <option key={time} value={time}>
+                {time}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label>Check-Out Time:</label>
+          <select
+            name="checkoutTime"
+            value={formData.checkoutTime}
+            onChange={handleTimeChange}
+            required
+          >
+            <option value="">Select Check-Out Time</option>
+            {timeOptions.map((time) => (
+              <option key={time} value={time}>
+                {time}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label>Vehicle Type:</label>
+          <input
+            type="text"
+            name="vehicleType"
+            value={formData.vehicleType}
+            onChange={handleChange}
+            placeholder="Enter your vehicle type (e.g., Car, Bike)"
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label>License Plate:</label>
+          <input
+            type="text"
+            name="licensePlate"
+            value={formData.licensePlate}
+            onChange={handleChange}
+            placeholder="Enter your vehicle's license plate"
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Payment Method:</label>
+          <select
+            name="paymentMethod"
+            value={formData.paymentMethod}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Select Payment Method</option>
+            <option value="credit_card">Credit Card</option>
+            <option value="debit_card">Debit Card</option>
+            <option value="paypal">PayPal</option>
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label>
+            <input
+              type="checkbox"
+              name="termsAccepted"
+              checked={formData.termsAccepted}
+              onChange={handleChange}
+              required
+            />
+            Accept Terms and Conditions
+          </label>
+        </div>
+
+        <button type="submit" className="submit-button">Submit Reservation</button>
+      </form>
+    </div>
+  );
 };
 
 export default ReservationForm;

@@ -14,6 +14,8 @@ import FetchLatLng from './components/FetchLatLng';
 import QRCode from './components/QRcodeGenerator';
 import Availability from './components/Availability';
 import Profile from './components/Profile';
+import Ticket from './components/Ticket';
+import FetchPlaceName from './components/FetchPlaceName';
 
 const App = () => {
   const [userEmail, setUserEmail] = useState("");
@@ -43,6 +45,8 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/demo" element={<Availability placeId="zGK4ChrgmCIEpU88d4dz"/>} />
           <Route path="/profile" element={<Profile/>}/>
+          <Route path="/ticket" element={<Ticket/>}/>
+          <Route path="/fetch" element={<FetchPlaceName/>}/>
         </Routes>
       </div>
     </Router>

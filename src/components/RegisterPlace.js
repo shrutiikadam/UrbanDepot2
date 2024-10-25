@@ -4,7 +4,8 @@ import db, { auth } from '../firebaseConfig';
 import emailjs from 'emailjs-com';
 import './Register.css';
 import { onAuthStateChanged } from 'firebase/auth';
-
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 const mapsApiKey = process.env.REACT_APP_MAPS_API_KEY;
 
 const RegisterPlace = () => {
@@ -21,11 +22,16 @@ const RegisterPlace = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [currentStep, setCurrentStep] = useState(1);
-  const [userName, setUserName] = useState(''); // State to store user's name // Step tracking
+  const [userName, setUserName] = useState('1'); // State to store user's name // Step tracking
+  const [slideDirection, setSlideDirection] = useState('');
   const mapRef = useRef(null);
   const markerRef = useRef(null);
   const inputRef = useRef(null); // Reference for the search input
-
+  const [prevStep, setPrevStep] = useState(null); // Track the previous step to determine the direction
+  const [animationDirection, setAnimationDirection] = useState('next');
+  const circles=document.querySelectorAll(".timeline-circle");
+  const timeline1=document.querySelectorAll(".timeline-step");
+  const buttons=document.querySelectorAll("button");
   // Fetch user email on mount
 
   useEffect(() => {
@@ -198,153 +204,204 @@ const RegisterPlace = () => {
     }
   };
 
-  const nextStep = () => {
-    setCurrentStep((prev) => prev + 1);
+  const handleNextStep = () => {
+    if (currentStep < 4) {
+      setSlideDirection('out-left'); // Current slide moves left (exiting)
+      setTimeout(() => {
+        setCurrentStep((prevStep) => prevStep + 1); // Move to next step
+        setSlideDirection('in-right'); // New slide comes in from right (entering)
+      }, 500); // Delay to let the slide-out animation complete
+    }
   };
-
-  const prevStep = () => {
-    setCurrentStep((prev) => prev - 1);
+  
+  const handlePrevStep = () => {
+    if (currentStep > 1) {
+      setSlideDirection('out-right'); // Current slide moves right (exiting)
+      setTimeout(() => {
+        setCurrentStep((prevStep) => prevStep - 1); // Move to previous step
+        setSlideDirection('in-left'); // New slide comes in from left (entering)
+      }, 500); // Delay to let the slide-out animation complete
+    }
   };
+  
 
+  
   return (
+    <div className='form123'>
     <div className="register-place-container">
-      <h2>Register Place</h2>
+      <h2>Place Registration Form</h2>
       {userName && <h3>HI, welcome {userName}</h3>} {/* Displaying user's name */}
       
       {/* Timeline */}
       <div className="timeline">
-        <div className={`timeline-step ${currentStep >= 1 ? 'completed' : ''}`}>
-          <div className={`timeline-circle ${currentStep === 1 ? 'active' : ''}`}>1</div>
-          <p>Step 1</p>
-        </div>
-        <div className={`timeline-step ${currentStep >= 2 ? 'completed' : ''}`}>
-          <div className={`timeline-circle ${currentStep === 2 ? 'active' : ''}`}>2</div>
-          <p>Step 2</p>
-        </div>
-        <div className={`timeline-step ${currentStep >= 3 ? 'completed' : ''}`}>
-          <div className={`timeline-circle ${currentStep === 3 ? 'active' : ''}`}>3</div>
-          <p>Step 3</p>
-        </div>
-        <div className={`timeline-step ${currentStep >= 4 ? 'completed' : ''}`}>
-          <div className={`timeline-circle ${currentStep === 4 ? 'active' : ''}`}>4</div>
-          <p>Step 4</p>
-        </div>
-      </div>
-      
+  <div className={`timeline-step ${currentStep >= 1 ? 'completed' : ''}`}>
+    <div className={`timeline-circle ${currentStep === 1 ? 'active' : currentStep > 1 ? 'completed-check' : ''}`}>
+      {currentStep > 1 ? <span className="fas fa-check"></span> : '1'}
+    </div>
+    <p>Address</p>
+  </div>
+  
+  <div className={`timeline-line ${currentStep > 1 ? 'filled' : ''}`}></div>
+
+  <div className={`timeline-step ${currentStep >= 2 ? 'completed' : ''}`}>
+    <div className={`timeline-circle ${currentStep === 2 ? 'active' : currentStep > 2 ? 'completed-check' : ''}`}>
+      {currentStep > 2 ? <span className="fas fa-check"></span> : '2'}
+    </div>
+    <p>Details</p>
+  </div>
+  
+  <div className={`timeline-line ${currentStep > 2 ? 'filled' : ''}`}></div>
+
+  <div className={`timeline-step ${currentStep >= 3 ? 'completed' : ''}`}>
+    <div className={`timeline-circle ${currentStep === 3 ? 'active' : currentStep > 3 ? 'completed-check' : ''}`}>
+      {currentStep > 3 ? <span className="fas fa-check"></span> : '3'}
+    </div>
+    <p>Duration</p>
+  </div>
+  
+  <div className={`timeline-line ${currentStep > 3 ? 'filled' : ''}`}></div>
+
+  <div className={`timeline-step ${currentStep >= 4 ? 'completed' : ''}`}>
+    <div className={`timeline-circle ${currentStep === 4 ? 'active' : ''}`}>
+      4
+    </div>
+    <p>Location</p>
+  </div>
+</div>
+
+      <div className="slider">
       <form onSubmit={handleSubmit} className="register-place-form">
-        {currentStep === 1 && (
-          <div className="step">
-            <div className="register-place-name">
-              <label>Place Name:</label>
-              <input
-                type="text"
-                value={placeName}
-                onChange={(e) => setPlaceName(e.target.value)}
-                required
-              />
-            </div>
-            <div className="register-place-address">
-              <label>Address:</label>
-              <input
-                type="text"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                required
-              />
-            </div>
-            <button type="button" onClick={nextStep}>Next</button>
-          </div>
-        )}
-  
-        {currentStep === 2 && (
-          <div className="step">
-            <div className="register-place-parking-number">
-              <label>Parking Number (if any):</label>
-              <input
-                type="text"
-                value={parkingNumber}
-                onChange={(e) => setParkingNumber(e.target.value)}
-              />
-            </div>
-            <div className="register-place-time">
-              <label>From:</label>
-              <input
-                type="time"
-                value={fromTime}
-                onChange={(e) => setFromTime(e.target.value)}
-                required
-              />
-              <label>To:</label>
-              <input
-                type="time"
-                value={toTime}
-                onChange={(e) => setToTime(e.target.value)}
-                required
-              />
-            </div>
-            <button type="button" onClick={prevStep}>Back</button>
-            <button type="button" onClick={nextStep}>Next</button>
-          </div>
-        )}
-  
-        {currentStep === 3 && (
-          <div className="step">
-            <div className="register-place-date">
-              <label>From Date:</label>
-              <input
-                type="date"
-                value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
-                required
-              />
-              <label>To Date:</label>
-              <input
-                type="date"
-                value={toDate}
-                onChange={(e) => setToDate(e.target.value)}
-                required
-              />
-            </div>
-            <div className="access-type">
-              <label>Access Type:</label>
-              <select value={accessType} onChange={(e) => setAccessType(e.target.value)}>
-                <option value="public">Public</option>
-                <option value="private">Private</option>
-              </select>
-            </div>
-            <button type="button" onClick={prevStep}>Back</button>
-            <button type="button" onClick={nextStep}>Next</button>
-          </div>
-        )}
-  
-        {currentStep === 4 && (
-          <div className="step">
-            <div className="register-place-location">
-              <label>Location:</label>
-              <input
-                type="text"
-                ref={inputRef}
-                placeholder="Search for a location"
-              />
-              <div ref={mapRef} style={{ height: '400px', width: '100%' }}></div>
-            </div>
-            <div className="live-location">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={useLiveLocation}
-                  onChange={(e) => setUseLiveLocation(e.target.checked)}
-                />
-                Use my live location
-              </label>
-            </div>
-            <button type="button" onClick={prevStep}>Back</button>
-            <button type="submit">Submit</button>
-          </div>
-        )}
-  
+      <div className={`step-container ${currentStep === 1 ? 'active' : ''} ${slideDirection === '' ? 'slide-out-left' : slideDirection === '' ? 'slide-in-right' : ''}`}>
+  {currentStep === 1 && (
+    <div className="step">
+      <div className="register-place-name">
+        <label>Place Name:</label>
+        <input
+          type="text"
+          value={placeName}
+          onChange={(e) => setPlaceName(e.target.value)}
+          required
+        />
+      </div>
+      <div className="register-place-address">
+        <label>Address:</label>
+        <input
+          type="text"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          required
+        />
+      </div>
+      <div className="button-container">
+        <button type="button" onClick={handleNextStep}>Next</button>
+      </div>
+    </div>
+  )}
+</div>
+
+<div className={`step-container ${currentStep === 2 ? 'active' : ''}`}>
+  {currentStep === 2 && (
+    <div className="step">
+      <div className="register-place-parking-number">
+        <label>Parking Number (if any):</label>
+        <input
+          type="text"
+          value={parkingNumber}
+          onChange={(e) => setParkingNumber(e.target.value)}
+        />
+      </div>
+      <div className="register-place-time">
+        <label>From:</label>
+        <input
+          type="time"
+          value={fromTime}
+          onChange={(e) => setFromTime(e.target.value)}
+          required
+        />
+        <label>To:</label>
+        <input
+          type="time"
+          value={toTime}
+          onChange={(e) => setToTime(e.target.value)}
+          required
+        />
+      </div>
+      <div className="button-container">
+        <button type="button" onClick={handlePrevStep}>Back</button>
+        <button type="button" onClick={handleNextStep}>Next</button>
+      </div>
+    </div>
+  )}
+</div>
+
+<div className={`step-container ${currentStep === 3 ? 'active' : ''}`}>
+  {currentStep === 3 && (
+    <div className="step">
+      <div className="register-place-date">
+        <label>From Date:</label>
+        <input
+          type="date"
+          value={fromDate}
+          onChange={(e) => setFromDate(e.target.value)}
+          required
+        />
+        <label>To Date:</label>
+        <input
+          type="date"
+          value={toDate}
+          onChange={(e) => setToDate(e.target.value)}
+          required
+        />
+      </div>
+      <div className="access-type">
+        <label>Access Type:</label>
+        <select value={accessType} onChange={(e) => setAccessType(e.target.value)}>
+          <option value="public">Public</option>
+          <option value="private">Private</option>
+        </select>
+      </div>
+      <div className="button-container">
+        <button type="button" onClick={handlePrevStep}>Back</button>
+        <button type="button" onClick={handleNextStep}>Next</button>
+      </div>
+    </div>
+  )}
+</div>
+
+<div className={`step-container ${currentStep === 4 ? 'active' : ''}`}>
+  {currentStep === 4 && (
+    <div className="step">
+      <div className="register-place-location">
+        <label>Location:</label>
+        <input
+          type="text"
+          ref={inputRef}
+          placeholder="Search for a location"
+        />
+        <div ref={mapRef} style={{ height: '400px', width: '100%' }}></div>
+      </div>
+      <div className="live-location">
+        <label>
+          <input
+            type="checkbox"
+            checked={useLiveLocation}
+            onChange={(e) => setUseLiveLocation(e.target.checked)}
+          />
+          Use my live location
+        </label>
+      </div>
+      <div className="button-container">
+        <button type="button" onClick={handlePrevStep}>Back</button>
+        <button type="submit">Submit</button>
+      </div>
+    </div>
+  )}
+</div>
+
         {errorMessage && <p className="error-message">{errorMessage}</p>}
       </form>
+      </div>
+    </div>
     </div>
   );  
 };

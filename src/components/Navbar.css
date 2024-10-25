@@ -45,3 +45,128 @@ nav h1 {
         text-align: center;
     }
 } */
+
+
+nav {
+    display: flex;
+    justify-content: space-between; /* Align items with space between */
+    align-items: center;            /* Center items vertically */
+    background-color: #2a2d34;     /* Dark background for a modern look */
+    padding: 15px 30px;            /* Padding for the navbar */
+    color: white;                   /* Text color */
+    font-family: 'Roboto', sans-serif; /* Font family */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* Soft shadow for depth */
+    transition: background-color 0.3s ease, padding 0.3s ease; /* Smooth transition for background color */
+}
+
+/* Change background on scroll */
+nav.scrolled {
+    background-color: #1f2126; /* Darker shade on scroll */
+    padding: 10px 30px;        /* Adjust padding for a more compact look */
+}
+
+nav h1 {
+    margin: 0;                     /* Remove default margin */
+    font-size: 24px;               /* Font size for the title */
+    font-weight: bold;             /* Bold for emphasis */
+    letter-spacing: 1px;          /* Spacing between letters */
+}
+
+/* Navigation Links Styles */
+.nav-links {
+    display: flex;                  /* Flex layout for links */
+    gap: 30px;                      /* Space between links */
+}
+
+.nav-links a {
+    color: #f0f0f0;                /* Light grey color for links */
+    text-decoration: none;         /* Remove underline */
+    font-size: 16px;              /* Font size for links */
+    position: relative;            /* Position relative for hover effect */
+    padding: 10px 15px;           /* Padding for links */
+    border-radius: 5px;           /* Rounded corners */
+    transition: color 0.3s ease, background-color 0.3s ease, transform 0.3s ease; /* Smooth transitions */
+}
+
+/* Subtle Hover Effects for Links */
+.nav-links a:hover,
+.nav-links a:focus {
+    color: #00bcd4;                /* Light blue on hover/focus */
+    background-color: rgba(255, 255, 255, 0.1); /* Slight background color change */
+    transform: translateY(-2px);   /* Lift effect on hover */
+}
+
+/* Underline Animation for Links */
+.nav-links a::after {
+    content: '';                   /* Pseudo-element for underline */
+    display: block;                /* Make it a block */
+    height: 2px;                  /* Height of underline */
+    width: 100%;                  /* Full width */
+    background: #00bcd4;          /* Underline color */
+    transition: transform 0.3s ease; /* Transition for transform */
+    transform: scaleX(0);         /* Start with scaleX 0 for animation */
+    position: absolute;            /* Positioning */
+    left: 0;                       /* Align to the left */
+    bottom: -4px;                  /* Position below the link */
+}
+
+.nav-links a:hover::after,
+.nav-links a:focus::after {
+    transform: scaleX(1);         /* Expand underline to full width on hover/focus */
+}
+
+/* User Info Styles */
+.user-info {
+    display: flex;                  /* Flex layout for user info */
+    align-items: center;            /* Center items vertically */
+}
+
+.user-info span {
+    margin-right: 15px;             /* Space between email and logout */
+    font-size: 16px;               /* Font size for user email */
+    font-weight: 500;              /* Semi-bold for emphasis */
+    color: #f0f0f0;                /* Consistent color with links */
+}
+
+/* Button styles */
+button {
+    padding: 10px 20px;            /* Button padding */
+    border: none;                   /* No border */
+    border-radius: 5px;            /* Rounded corners */
+    background-color: #dc3545;     /* Logout button color */
+    color: white;                   /* Button text color */
+    cursor: pointer;                /* Pointer cursor on hover */
+    font-size: 16px;                /* Font size for button */
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease; /* Transition effects */
+}
+
+button:hover {
+    background-color: #c82333;      /* Darker red on hover */
+    transform: translateY(-3px);    /* Slightly enlarge button on hover */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Shadow on hover */
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    nav {
+        flex-direction: column;      /* Stack items vertically */
+        align-items: flex-start;      /* Align items to the left */
+        padding: 15px;                /* Adjust padding for mobile */
+    }
+
+    .nav-links {
+        flex-direction: column;      /* Stack links vertically */
+        gap: 15px;                   /* Space between links */
+        margin-top: 10px;            /* Margin above links */
+    }
+
+    .nav-links a {
+        font-size: 14px;             /* Smaller font size for links on mobile */
+        padding: 10px 15px;          /* Padding for larger clickable area */
+    }
+
+    button {
+        width: 100%;                 /* Full width button on mobile */
+        margin-top: 10px;            /* Margin above button */
+    }
+}

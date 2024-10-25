@@ -1,0 +1,118 @@
+#map {
+    height: 85vh;
+    width: 130vh;
+    margin-left:37%;
+    border-radius: 25px;
+}
+
+.map-search {
+    position: absolute;
+    top: 5vh;
+    left: 5vh;
+    background: white;
+    padding: 15px; 
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 2;
+    width: 65vh; 
+    height: 90vh;
+    display: flex;
+    flex-direction: column; /* Stack main containers vertically */
+    gap: 10px; /* Space between main containers */
+}
+
+/* .map-row-2 {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    gap: 10px; 
+    width: 100%; 
+}
+
+.type-parking, .trave-mode {
+    flex: 1; 
+}
+
+.type-parking select,
+.trave-mode select {
+    width: 100%; 
+} */
+
+/* .map-row-2 label,
+.travel-mode label{
+    height: 10%;
+} */
+.park-search-div,
+.map-row-2,
+.date,
+.time {
+    height: 15%;
+    border: 1px solid #ccc;
+    border-radius:7px;
+    padding: 10px;
+    display: flex;
+    flex-direction: row; /* Align inner elements row-wise */
+    justify-content: space-evenly; /* Distribute space evenly */
+    align-items: stretch; /* Center items vertically */
+    gap: 5px; /* Space between inner elements */
+}
+
+
+.map-search button {
+    padding: 10px; 
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%; /* Ensure full width */
+    box-sizing: border-box; 
+}
+.map-search input,
+.map-search select{
+    border: none;
+    outline:none;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.map-search select {
+    appearance: none; /* Standardize appearance across browsers */
+}
+
+.map-search button {
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth transition for hover */
+}
+
+.map-search button:hover {
+    background-color: #45a049;
+}
+
+/* Popup styles for selected place */
+.popup {
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 10px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 3;
+}
+
+#directions-panel {
+    display: none; /* Initially hidden */
+    position: absolute;
+    top: 150px;
+    left: 10px;
+    max-height: 400px;
+    overflow-y: scroll;
+    border: 1px solid #ccc;
+    background: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 2;
+}

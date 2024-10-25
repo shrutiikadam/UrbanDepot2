@@ -6,8 +6,16 @@ const razorpayApiKey = process.env.REACT_APP_RAZORPAY_API_KEY;
 
 const RazorpayPayment = () => {
   const location = useLocation();
-  const navigate = useNavigate(); // Add useNavigate for redirection
-  
+  const navigate = useNavigate();
+
+  // Destructure address, placeName, and reservationData from location.state
+  const { 
+    address, 
+    placeName, 
+    reservationData 
+  } = location.state;
+
+  // Extract reservation details
   const { 
     checkinDate, 
     checkoutDate, 
@@ -16,8 +24,8 @@ const RazorpayPayment = () => {
     name, 
     email, 
     contactNumber,
-    vehicleType // Added vehicle type
-  } = location.state.reservationData;
+    vehicleType 
+  } = reservationData;
 
   // Function to calculate total amount based on time difference
   const calculateTotalAmount = () => {
@@ -61,6 +69,8 @@ const RazorpayPayment = () => {
         navigate('/ticket', { 
           state: {
             paymentId: response.razorpay_payment_id,
+            address,
+            placeName,
             reservationData: {
               checkinDate,
               checkoutDate,
@@ -93,6 +103,8 @@ const RazorpayPayment = () => {
     <div className="rzp-container">
       <h2 className="rzp-title">Pay with Razorpay</h2>
       <h4 className="rzp-subtitle">Reservation Details:</h4>
+      <p className="rzp-paragraph"><strong>Address:</strong> {address}</p>
+      <p className="rzp-paragraph"><strong>Place:</strong> {placeName}</p>
       <p className="rzp-paragraph">Check-in Date: {checkinDate}</p>
       <p className="rzp-paragraph">Check-out Date: {checkoutDate}</p>
       <p className="rzp-paragraph">Check-in Time: {checkinTime}</p>
@@ -120,7 +132,6 @@ const RazorpayPayment = () => {
       <button className="rzp-button" onClick={handlePayment}>Pay Now</button>
     </div>
   );
-  
 };
 
 export default RazorpayPayment;

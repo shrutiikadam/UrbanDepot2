@@ -1,5 +1,5 @@
 .ticket-container {
-    background-image: url('../images/ticket.png'); /* Adjusted image path */
+    background-image: url('./ticket.png'); /* Adjusted image path */
     background-size: cover;  /* Ensure the background covers the entire div */
     background-position: center;
     background-repeat: no-repeat;
