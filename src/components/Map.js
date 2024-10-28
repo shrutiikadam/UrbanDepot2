@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import './Map.css';
 import FetchLatLng from './FetchLatLng';
+import { ToastContainer, toast } from 'react-toastify'; // Import toast functionalities
+import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 
 const mapsApiKey = process.env.REACT_APP_MAPS_API_KEY;
 
@@ -16,6 +18,24 @@ const Map = () => {
     const [directionsSteps, setDirectionsSteps] = useState([]); 
     const [loading, setLoading] = useState(true); // Loading state
 
+    const [fromDate, setFromDate] = useState("");
+    const [toDate, setToDate] = useState("");
+    const [fromTime, setFromTime] = useState("");
+    const [toTime, setToTime] = useState("");
+
+    useEffect(() => {
+        // Get today's date and format it for the input fields
+        const today = new Date();
+        const formattedDate = today.toISOString().split("T")[0]; // YYYY-MM-DD format
+        setFromDate(formattedDate);
+        setToDate(formattedDate);
+
+        // Get the current time and format it for the input fields
+        const formattedTime = today.toTimeString().split(" ")[0].slice(0, 5); // HH:MM format
+        setFromTime(formattedTime);
+        setToTime(formattedTime);
+    }, []);
+    
     const onFetchPlaces = (newPlaces) => {
         console.log("Fetched places:", newPlaces);
         setPlaces(newPlaces);
@@ -55,7 +75,7 @@ const Map = () => {
                     map.setCenter(userLocation);
                 });
             } else {
-                alert("Geolocation is not supported by this browser.");
+            toast.error("Geolocation is not supported by this browser.");
             }
 
             const renderer = new window.google.maps.DirectionsRenderer();
@@ -69,7 +89,7 @@ const Map = () => {
     const searchNearbyPlaces = () => {
         const searchInput = document.getElementById("pac-input").value;
         if (!searchInput) {
-            alert("Please enter a location to search.");
+            toast.error("Please enter a location to search.");
             return;
         }
     
@@ -93,7 +113,7 @@ const Map = () => {
                 // Use filtered places and apply additional filters (time, date, access type) if needed
                 filterPlacesByCriteria(filteredPlaces, searchLocation);
             } else {
-                alert("Could not find location: " + status);
+            toast.error("Could not find location: " + status);
             }
         });
     };
@@ -163,7 +183,7 @@ const Map = () => {
 
      const getDirections = () => {
         if (!directionsRenderer || !userMarker || !selectedPlace) {
-            alert("Ensure a place is selected and user location is detected.");
+        toast.error("Ensure a place is selected and user location is detected.");
             return;
         }
 
@@ -188,7 +208,7 @@ const Map = () => {
                 ));
                 setDirectionsSteps(steps);
             } else {
-                alert("Directions request failed due to " + status);
+            toast.error("Directions request failed due to " + status);
             }
         });
     };
@@ -216,25 +236,27 @@ const Map = () => {
 </select>
 
             <div className="map-row-2">
-                <div className="date">
-                    <div className="from-date">
-                        <label>From Date:</label>
-                        <input type="date" id="from-date" />
-                    </div>
-                    <div className="to-date">
-                        <label>To Date:</label>
-                        <input type="date" id="to-date" />
-                    </div>
-                </div>
-                <div className="time">
-                    <div className="from-time">
-                        <label>From Time:</label>
-                        <input type="time" id="from-time" />
-                    </div>
-                    <div className="to-time">
-                        <label>To Time:</label>
-                        <input type="time" id="to-time" />
-                    </div>
+            <div className="date">
+    <div className="from-date">
+        <label>From Date:</label>
+        <input type="date" id="from-date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
+    </div>
+    <div className="to-date">
+        <label>To Date:</label>
+        <input type="date" id="to-date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
+    </div>
+</div>
+<div className="time">
+    <div className="from-time">
+        <label>From Time:</label>
+        <input type="time" id="from-time" value={fromTime} onChange={(e) => setFromTime(e.target.value)} />
+    </div>
+    <div className="to-time">
+        <label>To Time:</label>
+        <input type="time" id="to-time" value={toTime} onChange={(e) => setToTime(e.target.value)} />
+    </div>
+
+
                 </div>
                 <div className="access-type">
                     <label>Access Type:</label>
@@ -301,6 +323,7 @@ const Map = () => {
         )}
 
         <FetchLatLng onFetchPlaces={onFetchPlaces} />
+        <ToastContainer/>
         </div>
     );
 };
