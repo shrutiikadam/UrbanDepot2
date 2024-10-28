@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import PropTypes from 'prop-types';
 import db from '../firebaseConfig'; // Import your Firebase Firestore config
+import './FetchLatLng.css'; // Import your CSS file
 
 const FetchLatLng = ({ onFetchPlaces }) => {
     const [loading, setLoading] = useState(true);
@@ -88,7 +89,15 @@ const FetchLatLng = ({ onFetchPlaces }) => {
         fetchLatLng();
     }, []);
 
-    return loading ? <div>Loading...</div> : null; // Show loading indicator
+    return (
+        <div>
+            {loading && (
+                <div className="loading-indicator">
+                    <div className="spinner"></div> {/* Show spinner when loading */}
+                </div>
+            )}
+        </div>
+    );
 };
 
 FetchLatLng.propTypes = {

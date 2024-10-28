@@ -13,6 +13,8 @@ const Map = () => {
     const [popupVisible, setPopupVisible] = useState(false);
     const [selectedPlace, setSelectedPlace] = useState({});
     const [searchMarkers, setSearchMarkers] = useState([]); // State to hold markers
+    const [directionsSteps, setDirectionsSteps] = useState([]); 
+    const [loading, setLoading] = useState(true); // Loading state
 
     const onFetchPlaces = (newPlaces) => {
         console.log("Fetched places:", newPlaces);
@@ -35,6 +37,7 @@ const Map = () => {
             });
 
             setMapInstance(map);
+            setLoading(false); // Map loading finished
 
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition((position) => {
@@ -158,19 +161,36 @@ const Map = () => {
     };
     
 
-    const getDirections = () => {
-        if (!directionsRenderer || !userMarker) return;
+     const getDirections = () => {
+        if (!directionsRenderer || !userMarker || !selectedPlace) {
+            alert("Ensure a place is selected and user location is detected.");
+            return;
+        }
 
-        const requestDirections = {
-            origin: userMarker.getPosition(),
-            destination: { lat: selectedPlace.lat, lng: selectedPlace.lng },
-            travelMode: window.google.maps.TravelMode.DRIVING,
+        const travelModeSelect = document.getElementById("travel-mode");
+        const travelMode = travelModeSelect.value || window.google.maps.TravelMode.DRIVING; // Default to DRIVING
+
+        const request = {
+            origin: userMarker.getPosition(), // User's current location
+            destination: { lat: selectedPlace.lat, lng: selectedPlace.lng }, // Selected place
+            travelMode: travelMode,
         };
+        const directionsService = new window.google.maps.DirectionsService();
 
-        directionsRenderer.setMap(mapInstance);
-        directionsRenderer.setPanel(null); // Optional: Set a panel for directions if needed
+        directionsService.route(request, (result, status) => {
+            if (status === "OK") {
+                directionsRenderer.setDirections(result);
+                directionsRenderer.setMap(mapInstance); // Render route on the map
 
-        directionsRenderer.setDirections(requestDirections);
+                // Extract and set directions steps
+                const steps = result.routes[0].legs[0].steps.map((step, index) => (
+                    <li key={index}>{step.instructions.replace(/<[^>]*>/g, "")} - {Math.round(step.distance.value / 1000)} km</li>
+                ));
+                setDirectionsSteps(steps);
+            } else {
+                alert("Directions request failed due to " + status);
+            }
+        });
     };
 
     const proceedToBook = (place) => {
@@ -181,14 +201,20 @@ const Map = () => {
     return (
         <div className="map-container">
         <div className="map-search">
-            <h5>Find your perfect parking spot on UrbanDepot</h5>
-            <p>Search for nearby parking space according to their availability</p>
+        <h1><center>Find your perfect parking spot on UrbanDepot </center></h1>
             <div className="park-search-div">
                 <label>
                     <span>Locality for parking</span>
                     <input id="pac-input" type="text" placeholder="Anywhere" />
                 </label>
             </div>
+            <select id="travel-mode">
+  <option value="DRIVING">Driving</option>
+  <option value="WALKING">Walking</option>
+  <option value="BICYCLING">Bicycling</option>
+  <option value="TRANSIT">Transit</option>
+</select>
+
             <div className="map-row-2">
                 <div className="date">
                     <div className="from-date">
@@ -241,18 +267,16 @@ const Map = () => {
                         boxShadow: '0 0 10px rgba(0,0,0,0.5)',
                     }}
                 >
-                    <h3>Address: {selectedPlace.address}</h3>
-                    <p>Latitude: {selectedPlace.lat}</p>
-                    <p>Longitude: {selectedPlace.lng}</p>
-                    <p>ID: {selectedPlace.id}</p>
-                    <p>Charge (Rs.): {selectedPlace.chargeAvailability}</p>
+                    
+                    <h3>Place: {selectedPlace.id}</h3>
+                    <p>Address: {selectedPlace.address}</p>
                     <p>Availability From: {selectedPlace.availability.from}</p>
                     <p>Availability To: {selectedPlace.availability.to}</p>
                     {/* Display dateRange and accessType */}
                     <p>Date Range: From {selectedPlace.dateRange?.from} To {selectedPlace.dateRange?.to}</p>
                     <p>Access Type: {selectedPlace.accessType}</p>
                     {/* Show booked slots */}
-                    <h4>Booked Slots:</h4>
+                    <h4>  🚫 Already booked slots:</h4>
                     <ul style={{ color: 'red' }}>
                         {selectedPlace.reservations && selectedPlace.reservations.length > 0 ? (
                             selectedPlace.reservations.map((reservation, index) => (
@@ -265,11 +289,18 @@ const Map = () => {
                         )}
                     </ul>
                     <button onClick={() => proceedToBook(selectedPlace)}>Proceed to Pay</button>
-                    <button onClick={getDirections}>Get Directions</button>
+                    <button onClick={() => getDirections()}>Get Directions</button>
                     <button onClick={() => setPopupVisible(false)}>Close</button>
                 </div>
             )}
-            <FetchLatLng onFetchPlaces={onFetchPlaces} />
+            {directionsSteps.length > 0 && (
+            <div className="directions-box">
+                <h4>Directions:</h4>
+                <ul>{directionsSteps}</ul>
+            </div>
+        )}
+
+        <FetchLatLng onFetchPlaces={onFetchPlaces} />
         </div>
     );
 };

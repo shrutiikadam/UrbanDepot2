@@ -1,76 +1,135 @@
-/* Container to hold map and form side by side */
-.map-container {
-    display: flex;
-    width: 100%;
-    height: 100vh; /* Full viewport height */
-}
-
-/* Form Styling */
-.map-search {
-    width: 30%; /* Left side for search form */
-    padding: 20px;
-    background-color: #f7f8fa;
-    border-right: 1px solid #ddd; /* Right border for separation */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    overflow-y: auto; /* Allow scrolling if form content overflows */
-}
-
-/* Map Styling */
+/* Map Styles */
 #map {
-    width: 70%; /* Right side for map */
-    height: 100%; /* Full height to match the container */
-    border-radius: 60px;
-    padding-left: 20px;
+    height: 83vh;
+    width: 134vh;
+    margin-left: 36%;
+    margin-top: 18px;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.8); /* Milky background */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Soft shadow */
+    border: 2px solid rgba(200, 200, 200, 0.3); /* Subtle border */
+    backdrop-filter: blur(10px); /* Adds a blur effect */
 }
 
-/* Additional styles remain unchanged */
-.map-search h5 {
-    font-size: 1.5em;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.map-search p {
-    color: #555;
-    font-size: 1em;
-    margin-bottom: 20px;
-}
-
-.park-search-div input[type="text"],
-.map-search input[type="date"],
-.map-search input[type="time"],
-.map-search select {
-    width: 100%;
-    padding: 8px;
-    font-size: 0.9em;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-bottom: 15px;
-    box-sizing: border-box;
-}
-
-.map-row-2 {
+/* Search Container */
+.map-search {
+    position: absolute;
+    top: 0vh;
+    left: 5vh;
+    background: rgba(255, 255, 255, 0.9); /* Light milky background */
+    padding: 15px; 
+    border: 1px solid rgba(200, 200, 200, 0.4); /* Subtle border */
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Deeper shadow for pop-up effect */
+    z-index: 2;
+    width: 65vh;
+    height: auto; /* Allow height to adjust based on content */
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+    flex-direction: column;
+    gap: 8px; /* Reduced spacing to minimize extra space */
+}
+/* Input and Date/Time Div Styles */
+.park-search-div {
+    
+    display: flex; /* Arrange children in a row */
+    justify-content: space-between; /* Space between items */
+    gap: 10px; /* Space between From and To inputs */
+    align-items: center; /* Center items vertically within the container */
 }
 
-.date, .time, .access-type {
-    flex: 1;
-}
-
-.map-search button {
-    width: 100%;
-    background-color: #5a4fcf;
-    color: white;
+/* Input Styles */
+.park-search-div input,
+.map-row-2,
+.date,
+.time {
+    flex: 1; /* Allow inputs to grow equally */
+    min-width: 150px; /* Set a minimum width for uniformity */
+    border: 1px solid rgba(150, 150, 150, 0.2); /* Light border */
+    border-radius: 12px;
     padding: 10px;
-    font-size: 1em;
-    border: none;
-    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.7); /* Softer milky background */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Remove default margin from headings inside .park-search-div */
+.park-search-div h2, /* or h3, depending on your heading level */
+.park-search-div h3 {
+    margin: 0; /* Remove margin */
+}
+
+/* PAC Input Styles */
+#pac-input {
+    flex: 1; /* Allow input to grow equally with other inputs */
+    min-width: 480px; /* Set a minimum width for consistency */
+    padding: 10px; /* Add padding inside the input */
+    border: 1px solid rgba(150, 150, 150, 0.2); /* Light border */
+    border-radius: 12px; /* Match the border radius of other inputs */
+    background: rgba(255, 255, 255, 0.7); /* Softer milky background */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Same box-shadow for uniformity */
+    font-size: 16px; /* Keep the font size for better readability */
+    transition: border-color 0.3s ease; /* Smooth transition for border color */
+}
+
+/* Focus State for PAC Input */
+#pac-input:focus {
+    outline: none; /* Remove default outline */
+    border-color: #3498db; /* Change border color on focus */
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5); /* Glow effect on focus */
+}
+
+
+/* Button Styles */
+.map-search button {
+    padding: 10px;
+    border: 1px solid rgba(150, 150, 150, 0.2);
+    border-radius: 10px;
+    background: linear-gradient(135deg, #6D9EEB, #42A5F5); /* Creative gradient */
+    color: white;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth hover transitions */
 }
 
 .map-search button:hover {
-    background-color: #4a3db2;
+    background-color: #2196F3;
+    transform: translateY(-2px); /* Subtle lift on hover */
+}
+
+/* Input and Select Styles */
+.map-search input,
+.map-search select {
+    border: none;
+    outline: none;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.8); /* Milky input background */
+}
+/* Loader Styles */
+.loading-indicator {
+    position: fixed;
+    top: 0; /* Cover the entire viewport */
+    left: 0; /* Cover the entire viewport */
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgba(246, 237, 237, 0.256); /* White background with slight transparency */
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    z-index: 10; /* Ensure it's above other elements */
+}
+
+.spinner {
+    border: 8px solid #f3f3f3; /* Light grey */
+    border-top: 8px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 80px; /* Size of the spinner */
+    height: 80px; /* Size of the spinner */
+    animation: spin 1.5s linear infinite; /* Faster spinning animation */
+}
+
+/* Spinner Animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
