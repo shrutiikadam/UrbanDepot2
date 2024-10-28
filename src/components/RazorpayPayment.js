@@ -5,6 +5,10 @@ import db from '../firebaseConfig'; // Adjust the path to your Firebase config
 import './RazorpayPayment.css';
 import emailjs from 'emailjs-com';
 
+import { ToastContainer, toast } from 'react-toastify'; // Import toast functionalities
+import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
+
+
 const razorpayApiKey = process.env.REACT_APP_RAZORPAY_API_KEY;
 
 const RazorpayPayment = () => {
@@ -53,6 +57,7 @@ const RazorpayPayment = () => {
         }
       } catch (error) {
         console.error("Error fetching owner email:", error);
+        toast.success("fetched owner's email");
       }
     };
   
@@ -164,16 +169,17 @@ const RazorpayPayment = () => {
         'WfUPqJH0cRzftZSDI' // Replace with your EmailJS user ID
       );
       console.log('Email sent successfully!', response.status, response.text);
-      alert('NOTIFIED THE OWNER SUCCESSFULY!'); // Show success alert
+      toast.success('NOTIFIED THE OWNER SUCCESSFULY!'); // Show success alert
     } catch (error) {
       console.error('Error sending email:', error);
-      alert('Error sending email. Please try again.'); // Show error alert
+      toast.error('Error sending email. Please try again.'); // Show error alert
     }
   };
   
 
 
   return (
+    
     <div className="rzp-container">
       <h2 className="rzp-title">Pay with Razorpay</h2>
       <h4 className="rzp-subtitle">Reservation Details:</h4>
@@ -204,7 +210,9 @@ const RazorpayPayment = () => {
       </div>
   
       <button className="rzp-button" onClick={handlePayment}>Pay Now</button>
-    </div>
+      <ToastContainer/>
+      </div>
+    
   );
 };
 

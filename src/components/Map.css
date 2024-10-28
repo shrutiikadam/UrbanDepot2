@@ -13,6 +13,7 @@
     border-right: 1px solid #ddd; /* Right border for separation */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     overflow-y: auto; /* Allow scrolling if form content overflows */
+    border-radius: 12px;
 }
 
 /* Map Styling */
@@ -44,7 +45,7 @@
     padding: 8px;
     font-size: 0.9em;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 12px;
     margin-bottom: 15px;
     box-sizing: border-box;
 }

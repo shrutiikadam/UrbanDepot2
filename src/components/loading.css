@@ -1,0 +1,35 @@
+
+.loading-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 248, 248, 0.58);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+/* Car container */
+.car-animation {
+    position: relative;
+    width: 200px; /* Adjust width as needed */
+    height: 100px; /* Adjust height as needed */
+    animation: drive 2s linear infinite; /* Car drives in a loop */
+}
+
+/* Image styles */
+.loading-car {
+    width: 100%; /* Make image responsive to the container */
+    height: auto; /* Maintain aspect ratio */
+    position: absolute; /* Position it relative to the car-animation container */
+    top: 0; /* Align to top of container */
+}
+
+/* Drive animation (car moves horizontally) */
+@keyframes drive {
+    0% { transform: translateX(-150%); }
+    100% { transform: translateX(100%); }
+}

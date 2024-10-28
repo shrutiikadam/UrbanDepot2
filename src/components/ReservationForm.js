@@ -6,8 +6,10 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../firebaseConfig';
 import Tesseract from 'tesseract.js'; // Import Tesseract.js
 import './ReservationForm.css';
+import Loading from './loading'; // Adjust the path as necessary
+import { ToastContainer, toast } from 'react-toastify'; // Import toast functionalities
+import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 
-// Generate time options
 const generateTimeOptions = () => {
   const options = [];
   for (let hour = 0; hour < 24; hour++) {
@@ -18,6 +20,8 @@ const generateTimeOptions = () => {
   }
   return options;
 };
+
+
 
 // Get current local date in YYYY-MM-DD format
 const getCurrentLocalDate = () => {
@@ -35,6 +39,7 @@ const countryCodes = [
   // Add more country codes as needed
 ];
 
+
 const ReservationForm = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -43,6 +48,8 @@ const ReservationForm = () => {
   const addressFromURL = queryParams.get('address') || '';
   const placeFromURL = queryParams.get('id') || '';
   const [ocrText, setOcrText] = useState('');
+  const [loading, setLoading] = useState(false);
+
   const [step, setStep] = useState(1); // Track the current step
   const [errorMessage, setErrorMessage] = useState(''); // State for error message
   const [licenseValidationMessage, setLicenseValidationMessage] = useState(''); // State for license validation message
@@ -185,6 +192,9 @@ const isValidLicense = (text) => {
     setErrorMessage('');
     setLicenseValidationMessage('');
 
+    setLoading(true);
+
+
     // Calculate the start and end times for the reservation
     const requestedCheckin = new Date(`${formData.checkinDate}T${formData.checkinTime}:00`);
     const requestedCheckout = new Date(`${formData.checkoutDate}T${formData.checkoutTime}:00`);
@@ -192,6 +202,7 @@ const isValidLicense = (text) => {
     // Validate the license name against the user's name
     if (!validateLicense()) {
       setLicenseValidationMessage('The name on the license does not match the provided name. Please upload a valid license.');
+      setLoading(false); // Reset loading state
       return;
     }
 
@@ -219,6 +230,7 @@ const isValidLicense = (text) => {
 
       if (conflict) {
         setErrorMessage('This time slot is already booked. Please choose a different time.');
+        setLoading(false); // Reset loading state
         return; // Exit early if there’s a conflict
       }
 
@@ -253,16 +265,21 @@ const isValidLicense = (text) => {
       await setDoc(doc(db, 'users', formData.email, 'bookings', licensePlateId), reservationData);
 
       console.log("Reservation successfully saved!");
+      toast.success("Reservation successfully saved!");
       navigate('/payment', { state: { address: formData.address,place:formData.place ,reservationData } });
     } catch (error) {
       console.error("Error saving reservation: ", error);
-      alert("Error occurred while saving the reservation. Please try again.");
+      toast.error("Error occurred while saving the reservation. Please try again."); // Show error toast
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
   // Render steps based on current step
   const renderStep = () => {
-    return (
+    if (loading) {
+      return <Loading />; // Show loading component
+    }    return (
       <div>
         {errorMessage && <div className="error-message">{errorMessage}</div>} {/* Error message display */}
         {licenseValidationMessage && <div className="license-validation-message">{licenseValidationMessage}</div>} {/* License validation message */}
@@ -376,13 +393,17 @@ const isValidLicense = (text) => {
           </>
         )}
       </div>
+      
     );
   };
 
   return (
-    <form>
-      {renderStep()}
-    </form>
+    <>
+      <form>
+        {renderStep()}
+      </form>
+      <ToastContainer /> {/* Include the ToastContainer here */}
+    </>
   );
 };
 
