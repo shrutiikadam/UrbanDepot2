@@ -1,0 +1,32 @@
+.fetch-lat-lng-container {
+    position: relative;
+    height: 100%; /* Ensure it takes full height if needed */
+}
+/* Loader Styles */
+.loading-indicator {
+    position: fixed;
+    top: 0; /* Cover the entire viewport */
+    left: 0; /* Cover the entire viewport */
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgba(246, 237, 237, 0.256); /* White background with slight transparency */
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    z-index: 10; /* Ensure it's above other elements */
+}
+
+.spinner {
+    border: 8px solid #f3f3f3; /* Light grey */
+    border-top: 8px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 80px; /* Size of the spinner */
+    height: 80px; /* Size of the spinner */
+    animation: spin 1.5s linear infinite; /* Faster spinning animation */
+}
+
+/* Keyframes for spinning animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
