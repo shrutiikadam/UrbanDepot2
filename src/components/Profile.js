@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { auth, db } from '../firebaseConfig'; // Assuming firebaseConfig is correctly set up
 import { collection, getDocs } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
-import styles from './Profile.module.css'; // Assume you have some styles here
+import styles from './Profile.css'; // Assume you have some styles here
 
 const Profile = () => {
     const [bookings, setBookings] = useState([]);

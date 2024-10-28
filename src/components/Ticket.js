@@ -80,35 +80,49 @@ const Ticket = ({ userEmail }) => {
   };
 
   return (
-    <div className="ticket-container" style={{ backgroundImage: `url(${ticketImage})` }} id="ticket-container">
-      <div className="ticket-header">TICKET DETAILS</div>
-      <p><strong>Address:</strong> {address}</p>
-      <p><strong>Place:</strong> {place}</p>
-      <div className="ticket-detail">Vehicle Type: {reservationData.vehicleType}</div>
-      <div className="ticket-detail">Check-in: {reservationData.checkinDate}</div>
-      <div className="ticket-detail">Check-out: {reservationData.checkoutDate}</div>
-      <div className="ticket-detail">Check-in Time: {reservationData.checkinTime}</div>
-      <div className="ticket-detail">Check-out Time: {reservationData.checkoutTime}</div>
-      <div className="ticket-footer">Total Paid: ₹{totalAmount}</div>
-
-
-      {/* Buttons for downloading the PDF and sending email */}
-      <div className="button-container">
-        <button className="ticket-button" onClick={downloadPDF}>Download Ticket PDF</button>
-        <button className="ticket-button" onClick={sendEmail}>Send Ticket via Email</button>
+    <div className="ticket-wrapper">
+      <div
+        className="ticket-container"
+        style={{ backgroundImage: `url(${ticketImage})` }}
+        id="ticket-container"
+      >
+        <div className="ticket-header">TICKET DETAILS</div>
+        <div className="ticket-details">
+          <p>
+            <strong>Address:</strong> {address}
+          </p>
+          <p>
+            <strong>Place:</strong> {place}
+          </p>
+          <div className="ticket-detail">Vehicle Type: {reservationData.vehicleType}</div>
+          <div className="ticket-detail">Check-in: {reservationData.checkinDate}</div>
+          <div className="ticket-detail">Check-out: {reservationData.checkoutDate}</div>
+          <div className="ticket-detail">Check-in Time: {reservationData.checkinTime}</div>
+          <div className="ticket-detail">Check-out Time: {reservationData.checkoutTime}</div>
+          <div className="ticket-footer">Total Paid: ₹{totalAmount}</div>
+        </div>
+  
+        <div className="qr-code">
+          <QRCodeCanvas
+            value={`Payment ID: ${paymentId}, Total: ₹${totalAmount}`}
+            size={230}
+            level="H"
+          />
+        </div>
       </div>
-      
-      {/* QR Code generation */}
-      <div className="qr-code">
-        <QRCodeCanvas 
-          value={`Payment ID: ${paymentId}, Total: ₹${totalAmount}`} // QR code data
-          size={180} // Size of the QR code
-          level="H" // Error correction level
-        />
+  
+      {/* Button Container placed outside ticket-container */}
+      <div className="button-container">
+        <button className="ticket-button" onClick={downloadPDF}>
+          Download Ticket PDF
+        </button>
+        <button className="ticket-button" onClick={sendEmail}>
+          Send Ticket via Email
+        </button>
       </div>
     </div>
-    
   );
+  
 };
 
 export default Ticket;

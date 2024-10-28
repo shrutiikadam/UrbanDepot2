@@ -1,98 +1,143 @@
-body{
-    background-color: #dddbd4;}/* Wrapper to center the ticket without shifting the navbar */
-    .ticket-wrapper {
-        display: flex;
-        justify-content: center;  /* Center horizontally */
-        align-items: center;  /* Center vertically */
-        height: calc(100vh - 80px); /* Adjust height, assuming navbar height is ~80px */
-        margin-top: 80px; /* Reserve space for the navbar */
-        overflow: hidden; /* Prevent overflow issues */
-    }
+body {
+    background-color: #f8f1e6;
+    font-family: 'Poppins', sans-serif; /* Global font */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
     
-    /* Ticket container styling */
-    .ticket-container {
-        background-image: url('./images/ticket.png'); /* Correct image path */
-        background-size: contain; /* Ensure the image fits well */
-        background-repeat: no-repeat;
-        background-position: center;
+  }
+  
+  .ticket-wrapper {
+    display: flex;
+    flex-direction: column; /* Stack the ticket and buttons vertically */
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 100px); /* Full height minus navbar */
+    margin-top: 4px;
+    overflow: hidden;
+  }
+  
+  .ticket-container {
+    position: relative;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
     margin-top: 20px;
-    margin-left: 90px;
-        width: 90%;  /* Responsive width */
-        max-width: 2000px;  /* Limit max size */
-        aspect-ratio: 4 / 1;  /* Adjusted ratio to fit content properly */
-    
-        border-radius: 12px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        padding: 20px;
-        color: #fff;
-        font-family: 'Arial', sans-serif;
-    
-        display: flex;
-        flex-direction: column;
-        justify-content: space-around; /* Spread the content evenly */
-        align-items: center;
-        text-align: center;
-    
-        transform: translateX(30px); /* Subtle rightward shift */
-    }
-    
-    /* Header, detail, and footer styling */
-    .ticket-header {
-        font-size: 1.8rem;
-        font-weight: bold;
-        margin-bottom: 20px;
-        margin-top: 170px;
-        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    }
-    
-    .ticket-detail {
-        font-size: 1rem;
-        margin: 3px 0;
-    }
-    
-    .ticket-footer {
-        font-size: 0.9rem;
-        font-weight: bold;
-        margin-top: 15px;
-    }
-    
-    /* Button styling */
-.button-container {
-    display: flex; /* Use flexbox to arrange buttons side by side */
-    justify-content: center; /* Center the buttons */
-    margin-top: 20px; /* Space above the buttons */
-}
-/* Button styling */
-.ticket-container .button-container {
-    display: flex; /* Use flexbox to arrange buttons side by side */
-    justify-content: center; /* Center the buttons */
-    margin-top: 20px; /* Space above the buttons */
+    width: 120%;
+    max-width: 2400px;
+    aspect-ratio: 4 / 1;
+    border-radius: 12px;
+    padding: 20px;
+    color: #fff;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    text-align: center;
+
+    /* border: 5px dashed #000000; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); 
+    background-color: rgba(255, 255, 255, 0.1);  */
 }
 
-.ticket-container .ticket-button {
-    background-color: #4CAF50; /* Green background */
-    color: white; /* White text */
-    border: none; /* No border */
-    padding: 10px 20px; /* Padding for size */
-    font-size: 1rem; /* Font size */
-    border-radius: 5px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor on hover */
-    margin: 0 10px; /* Space between buttons */
-    transition: background-color 0.3s; /* Smooth background change */
+/* Header Styling */
+.ticket-header {
+    font-size: 3.2rem; /* Larger font for attention */
+    font-weight: 800; /* Heavier font weight for impact */
+    margin-bottom: -70px;
+    margin-top: 20px;
+    margin-left: -80px;
+    font-family: 'Poppins', sans-serif; /* Clean, modern font */
+    color: #fff; /* Base white color */
+    
+
+    background: linear-gradient(90deg, #e5cb0b, #ffcc00);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    letter-spacing: 2px; /* Sleek spacing */
+    display: inline-block; /* Ensure emoji stays aligned */
+
+    border-radius: 25px;
+    padding: 10px 30px;
+
+    animation: glow 2s infinite alternate; /* Glowing animation */
+    transition: transform 0.3s ease-in-out;
 }
 
-/* Hover effect for buttons */
-.ticket-container .ticket-button:hover {
-    background-color: #45a049; /* Darker green on hover */
+/* Add some emojis in the header */
+.ticket-header::before {
+    content: "🎫 "; /* Ticket emoji */
 }
 
-.ticket-container .ticket-button:focus {
-    outline: none; /* Remove outline on focus */
+
+/* Hover effect for interactivity */
+.ticket-header:hover {
+    transform: scale(1.08); /* Slight zoom effect */
+    cursor: pointer; /* Change cursor to pointer */
 }
-.qr-code {
-    display: flex; /* Flexbox to center the content */
-    justify-content: center; /* Center horizontally */
-    margin-top: -200px; /* Move the QR code up; adjust this value as needed */
-    position: relative; /* Set position to relative */
-    width: 100%; /* Make it full width of the parent */
+
+
+
+/* Ticket Details */
+.ticket-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Add space between details */
+    margin-bottom: 20px;
+    margin-left: -400px;
+    font-size: 1.2rem;
+    line-height: 1.8; /* Improved readability */
+
+    
 }
+
+/* Individual Detail Items */
+.ticket-detail {
+    line-height: 1.5;
+    color: #f0f0f0; /* Light gray for contrast */
+   
+
+}
+
+/* Footer Styling */
+.ticket-footer {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-top: 15px;
+}
+  
+  .qr-code {
+    position: absolute;
+    left: 60%;
+    top: 55%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px; /* Space between ticket and buttons */
+    gap: 20px; /* Space between buttons */
+  }
+  
+  .ticket-button {
+    background-color: #000000;
+    color: #e5cb0b;
+    border: none;
+    padding: 7px 20px;
+    font-size: 1.3rem;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .ticket-button:hover {
+    background-color: #daa520;
+  }
+  
+  .ticket-button:focus {
+    outline: none;
+  }
+  

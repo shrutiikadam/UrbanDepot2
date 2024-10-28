@@ -52,12 +52,13 @@ const RazorpayPayment = () => {
           const ownerEmail = placeDoc.data().ownerEmail;
           setOwnerEmail(ownerEmail);
           console.log('Owner Email:', ownerEmail);
+          toast.success("Fetched owner email");
         } else {
           console.error('No such document!');
         }
       } catch (error) {
         console.error("Error fetching owner email:", error);
-        toast.success("fetched owner's email");
+        toast.error("fetched owner's email");
       }
     };
   
@@ -169,7 +170,7 @@ const RazorpayPayment = () => {
         'WfUPqJH0cRzftZSDI' // Replace with your EmailJS user ID
       );
       console.log('Email sent successfully!', response.status, response.text);
-      toast.success('NOTIFIED THE OWNER SUCCESSFULY!'); // Show success alert
+      toast.success('NOTIFIED THE OWNER SUCCESSFULY!', response.status, response.text); // Show success alert
     } catch (error) {
       console.error('Error sending email:', error);
       toast.error('Error sending email. Please try again.'); // Show error alert
@@ -179,7 +180,8 @@ const RazorpayPayment = () => {
 
 
   return (
-    
+    <>
+     <ToastContainer /> {/* Place the ToastContainer at the top level of your component */}
     <div className="rzp-container">
       <h2 className="rzp-title">Pay with Razorpay</h2>
       <h4 className="rzp-subtitle">Reservation Details:</h4>
@@ -210,9 +212,9 @@ const RazorpayPayment = () => {
       </div>
   
       <button className="rzp-button" onClick={handlePayment}>Pay Now</button>
-      <ToastContainer/>
+ 
       </div>
-    
+    </>
   );
 };
 

@@ -50,14 +50,15 @@ h2 {
 button {
     display: inline-block;
     padding: 10px 15px;
-    background-color: #4CAF50;
-    color: white;
+    background-color: #000000;
+    color: #e5cb0b;
     border: none;
-    border-radius: 5px;
+    border-radius: 12px;
     cursor: pointer;
     margin-top: 20px;
+    transition: background-color 0.3s; /* Smooth transition */
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #daa520;
 }
