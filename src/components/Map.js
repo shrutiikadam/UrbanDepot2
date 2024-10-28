@@ -32,8 +32,8 @@ const Map = () => {
 
         window.initMap = () => {
             const map = new window.google.maps.Map(mapRef.current, {
-                center: { lat: 20.5937, lng: 78.9629 }, // Centered on India
-                zoom: 5,
+                center: { lat: 19.0760, lng: 72.8777 }, // Centered on Mumbai
+                zoom: 11,
             });
 
             setMapInstance(map);
