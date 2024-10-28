@@ -6,7 +6,14 @@ import './Register.css';
 import { onAuthStateChanged } from 'firebase/auth';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
+
 const mapsApiKey = process.env.REACT_APP_MAPS_API_KEY;
+
+const emailJsServiceId = process.env.REACT_APP_EMAILJS_SERVICE_ID;
+const emailJsTemplateId = process.env.REACT_APP_EMAILJS_REGISTER;
+const emailJsUserId = process.env.REACT_APP_EMAILJS_USER_ID;
+
+
 
 const RegisterPlace = () => {
   const [placeName, setPlaceName] = useState('');
@@ -24,6 +31,7 @@ const RegisterPlace = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [userName, setUserName] = useState('1'); // State to store user's name // Step tracking
   const [slideDirection, setSlideDirection] = useState('');
+  const [ownerEmail, setOwnerEmail] = useState(''); 
   const mapRef = useRef(null);
   const markerRef = useRef(null);
   const inputRef = useRef(null); // Reference for the search input
@@ -32,17 +40,18 @@ const RegisterPlace = () => {
   const circles=document.querySelectorAll(".timeline-circle");
   const timeline1=document.querySelectorAll(".timeline-step");
   const buttons=document.querySelectorAll("button");
-  // Fetch user email on mount
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUserEmail(user.email); // Set user email from Firebase
-        setUserName(user.displayName || user.email.split('@')[0]); // Set user name or fallback to email
-      } else {
-        setErrorMessage('No user is logged in. Please log in to register a place.');
-      }
-    });
+
+useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    if (user) {
+      setUserEmail(user.email); // Set user email from Firebase
+      setOwnerEmail(user.email); // Autofill owner's email
+      setUserName(user.displayName || user.email.split('@')[0]); // Set user name or fallback to email
+    } else {
+      setErrorMessage('No user is logged in. Please log in to register a place.');
+    }
+  });
 
     return () => unsubscribe(); // Cleanup subscription
   }, []);
@@ -133,13 +142,17 @@ const RegisterPlace = () => {
     }
 
     const templateParams = {
-      to_email: userEmail,
-      subject: "Place Registration Successful",
+      to_email: ownerEmail,
       message: `You have successfully registered a new place named "${placeName}" at address: ${address}.`,
     };
 
     try {
-      await emailjs.send('service_jqajw2l', 'template_od7gyfk', templateParams, 'lmjzjf2u4E96BI8-H');
+      await emailjs.send(
+        emailJsServiceId,
+        emailJsTemplateId,
+        templateParams,
+        emailJsUserId
+      );
       console.log('Email sent successfully');
       alert("Email sent successfully!");
     } catch (error) {
@@ -155,6 +168,7 @@ const RegisterPlace = () => {
       setErrorMessage('No user is logged in. Please log in to register a place.');
       return;
     }
+
   
     // Log submitted values for debugging
     console.log('Submitting with the following values:');
@@ -185,7 +199,9 @@ const RegisterPlace = () => {
         dateRange: { from: fromDate, to: toDate },
         landmark,
         accessType,
+        ownerEmail
     };
+
 
     try {
         const userDocRef = doc(db, 'users', userEmail);
@@ -292,6 +308,16 @@ const RegisterPlace = () => {
           required
         />
       </div>
+      <div className="register-owner-email">
+  <label>Owner's Email:</label>
+  <input
+    type="email"
+    value={ownerEmail}
+    onChange={(e) => setOwnerEmail(e.target.value)} // Keep it editable
+    required
+  />
+</div>
+
       <div className="button-container">
         <button type="button" onClick={handleNextStep}>Next</button>
       </div>

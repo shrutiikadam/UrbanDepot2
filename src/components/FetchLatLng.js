@@ -23,10 +23,11 @@ const FetchLatLng = ({ onFetchPlaces }) => {
                 const address = data.address || 'Not available';
                 const availability = data.availability || { from: 'Not available', to: 'Not available' };
                 const charge = data.charge || 'Not available';
+                const accessType = data.accessType || 'Not available'; // New field
+                const dateRange = data.dateRange || { from: 'Not available', to: 'Not available' }; // New field
 
                 // Check dateRange validity
-                const dateRangeFrom = data.dateRange?.from; // Assuming dateRange.from is in 'YYYY-MM-DD'
-                const dateRangeTo = data.dateRange?.to; // Assuming dateRange.to is in 'YYYY-MM-DD'
+                const dateRangeTo = dateRange.to; // Assuming dateRange.to is in 'YYYY-MM-DD'
 
                 // Skip the place if dateRange.to is before today's date
                 if (dateRangeTo && new Date(dateRangeTo) < today) {
@@ -60,7 +61,7 @@ const FetchLatLng = ({ onFetchPlaces }) => {
                 // Log details for each place including reservations
                 console.log(`Fetched Place - ID: ${doc.id}, Lat: ${lat}, Lng: ${lng}, Address: ${address}, Reservations Count: ${reservations.length}`);
 
-                // Push place regardless of reservations
+                // Push place including new fields
                 places.push({ 
                     id: doc.id, 
                     lat, 
@@ -68,6 +69,8 @@ const FetchLatLng = ({ onFetchPlaces }) => {
                     address, 
                     availability, 
                     charge, 
+                    accessType, // Include accessType
+                    dateRange, // Include dateRange
                     reservations // Include reservations (could be empty)
                 });
             }
