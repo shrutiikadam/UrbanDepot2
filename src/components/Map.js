@@ -162,36 +162,51 @@ const Map = () => {
     
 
      const getDirections = () => {
-        if (!directionsRenderer || !userMarker || !selectedPlace) {
-            alert("Ensure a place is selected and user location is detected.");
-            return;
-        }
+    if (!directionsRenderer || !userMarker || !selectedPlace) {
+        alert("Ensure a place is selected and user location is detected.");
+        return;
+    }
 
-        const travelModeSelect = document.getElementById("travel-mode");
-        const travelMode = travelModeSelect.value || window.google.maps.TravelMode.DRIVING; // Default to DRIVING
+    const travelModeSelect = document.getElementById("travel-mode");
+    const travelMode = travelModeSelect.value || window.google.maps.TravelMode.DRIVING;
 
-        const request = {
-            origin: userMarker.getPosition(), // User's current location
-            destination: { lat: selectedPlace.lat, lng: selectedPlace.lng }, // Selected place
-            travelMode: travelMode,
-        };
-        const directionsService = new window.google.maps.DirectionsService();
-
-        directionsService.route(request, (result, status) => {
-            if (status === "OK") {
-                directionsRenderer.setDirections(result);
-                directionsRenderer.setMap(mapInstance); // Render route on the map
-
-                // Extract and set directions steps
-                const steps = result.routes[0].legs[0].steps.map((step, index) => (
-                    <li key={index}>{step.instructions.replace(/<[^>]*>/g, "")} - {Math.round(step.distance.value / 1000)} km</li>
-                ));
-                setDirectionsSteps(steps);
-            } else {
-                alert("Directions request failed due to " + status);
-            }
-        });
+    const request = {
+        origin: userMarker.getPosition(),
+        destination: { lat: selectedPlace.lat, lng: selectedPlace.lng },
+        travelMode: travelMode,
     };
+    const directionsService = new window.google.maps.DirectionsService();
+
+    directionsService.route(request, (result, status) => {
+        if (status === "OK") {
+            directionsRenderer.setDirections(result);
+            directionsRenderer.setMap(mapInstance);
+
+            // Extract and set directions steps
+            const steps = result.routes[0].legs[0].steps.map((step, index) => (
+                <li key={index} className="direction-step">
+                    <span className="direction-icon">➡️</span> {/* Customize icons per step type */}
+                    <div className="direction-details">
+                        <span className="instruction">
+                            {step.instructions.replace(/<[^>]*>/g, "")}
+                        </span>
+                        <span className="distance">{Math.round(step.distance.value / 1000)} km</span>
+                    </div>
+                </li>
+            ));
+            setDirectionsSteps(steps);
+            setPopupVisible(false); //closing the popup
+            setIsMapShrunk(true); //shrinking the map on get-diretion event
+            setDirectionsVisible(true);
+
+        } else {
+            alert("Directions request failed due to " + status);
+        }
+    });
+};
+
+    const [directionsVisible, setDirectionsVisible] = useState(false);
+    const [isMapShrunk, setIsMapShrunk] = useState(false); //for shrinking the map on get-direction event
 
     const proceedToBook = (place) => {
         const query = `?lat=${place.lat}&lng=${place.lng}&name=${encodeURIComponent(place.id)}&charge=${place.chargeAvailability}&id=${selectedPlace.id}&address=${place.address}`;
@@ -199,75 +214,65 @@ const Map = () => {
     };
 
     return (
-        <div className="map-container">
+        <div style={{ position: "relative" }}>
+        <div className={`map ${isMapShrunk ? 'shrunk' : ''}`} ref={mapRef}></div>
         <div className="map-search">
-        <h1><center>Find your perfect parking spot on UrbanDepot </center></h1>
-            <div className="park-search-div">
-                <label>
-                    <span>Locality for parking</span>
-                    <input id="pac-input" type="text" placeholder="Anywhere" />
-                </label>
+        <h5>Find your perfect parking spot on UrbanDepot </h5>
+        <p>Search for nearby parking space according to their availability</p>
+            <div className="park-search-div" id="park-search-div">
+                <label>Locality for parking</label>
+                    <input className="pac-input" id="pac-input" type="text" placeholder="Anywhere" />     
             </div>
-            <select id="travel-mode">
-  <option value="DRIVING">Driving</option>
-  <option value="WALKING">Walking</option>
-  <option value="BICYCLING">Bicycling</option>
-  <option value="TRANSIT">Transit</option>
-</select>
-
             <div className="map-row-2">
-                <div className="date">
-                    <div className="from-date">
-                        <label>From Date:</label>
-                        <input type="date" id="from-date" />
-                    </div>
-                    <div className="to-date">
-                        <label>To Date:</label>
-                        <input type="date" id="to-date" />
-                    </div>
+            <div className="type-parking">
+            <label>Type of Parking </label>
+            <select id="access-type">
+                        <option value="">Any</option>
+                        <option value="public">Public</option>
+                        <option value="private">Private</option>
+                    </select></div>
+            <div class="divider"></div>
+            <div className="travel-mode"><label>Travel-mode</label>
+            <select id="travel-mode">
+                <option value="DRIVING">Driving</option>
+                <option value="WALKING">Walking</option>
+                <option value="BICYCLING">Bicycling</option>
+                <option value="TRANSIT">Transit</option>
+            </select></div>
+            </div>
+            <div className="date">
+                <div className="from-date">
+                    <label>From Date:</label>
+                    <input type="date" id="from-date" />
                 </div>
-                <div className="time">
-                    <div className="from-time">
-                        <label>From Time:</label>
-                        <input type="time" id="from-time" />
+                <div class="divider"></div>
+                <div className="to-date">
+                    <label>To Date:</label>
+                    <input type="date" id="to-date" />
+                </div>
+            </div>    
+            <div className="time">
+                <div className="from-time">
+                    <label>From Time:</label>
+                    <input type="time" id="from-time" />
                     </div>
+                    <div class="divider"></div>
                     <div className="to-time">
                         <label>To Time:</label>
                         <input type="time" id="to-time" />
                     </div>
                 </div>
-                <div className="access-type">
-                    <label>Access Type:</label>
-                    <select id="access-type">
-                        <option value="">Any</option>
-                        <option value="public">Public</option>
-                        <option value="private">Private</option>
-                    </select>
-                </div>
+                
                 <button onClick={searchNearbyPlaces}>
                     Search Nearby
                 </button>
+                
             </div>
-        </div>
-        <div id="map" ref={mapRef}></div>
-
-        
-
+       
             {/* Popup for displaying selected place details */}
             {popupVisible && (
-                <div
-                    style={{
-                        position: 'absolute',
-                        top: '100px',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        background: 'white',
-                        padding: '10px',
-                        border: '1px solid #ccc',
-                        boxShadow: '0 0 10px rgba(0,0,0,0.5)',
-                    }}
-                >
-                    
+                <div className="map-popup">
+                    <div className="map-popup-content">
                     <h3>Place: {selectedPlace.id}</h3>
                     <p>Address: {selectedPlace.address}</p>
                     <p>Availability From: {selectedPlace.availability.from}</p>
@@ -292,16 +297,21 @@ const Map = () => {
                     <button onClick={() => getDirections()}>Get Directions</button>
                     <button onClick={() => setPopupVisible(false)}>Close</button>
                 </div>
+                </div>
             )}
             {directionsSteps.length > 0 && (
-            <div className="directions-box">
+            <div className="direction-box">
+            <div className={`directions-box-directions ${directionsVisible ? "show":""}`}>
+                <button className="dir_panel-exit-button" onClick={() => setDirectionsVisible(false)}>
+                    exit
+                </button>
                 <h4>Directions:</h4>
-                <ul>{directionsSteps}</ul>
-            </div>
+                <ul id="direction-list">{directionsSteps}</ul>
+            </div></div>
         )}
 
         <FetchLatLng onFetchPlaces={onFetchPlaces} />
-        </div>
+       </div> 
     );
 };
 
