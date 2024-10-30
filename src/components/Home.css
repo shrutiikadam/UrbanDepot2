@@ -1,0 +1,262 @@
+body {
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .landing {
+    background: linear-gradient(to left, #f7e3c580 50%, #cecece 100%);
+    color: rgb(0, 0, 0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 87.5vh;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+  }
+  
+  .first-row{
+    display: flex;
+    gap:3vh;
+    /* justify-content: space-evenly; */
+  }
+  .first-line-wrapper{
+    display: flex;
+    flex-direction: column;
+  }
+  .hero-text {
+    margin-left: 7%;
+    margin-bottom: 20%;
+  }
+  
+  .first-line-wrapper {
+    display: flex;
+    align-items: left;
+    /* gap: 11px;  */
+    margin-top: 20vh;
+  }
+  
+  .firstline {
+    color: rgb(0, 0, 0);
+    font-size: 30px;
+    text-align: left;
+    right:10%;
+  }
+  .firstline1{
+    color: rgb(0, 0, 0);
+    font-size: 30px;
+    text-align: left;
+    margin-bottom: 0;
+  }
+  .secondline1{
+   font-size: 3vh;
+   margin-top: 3%;
+  }
+  
+  .title1 {
+    font-family: "Bruno Ace", sans-serif;
+    font-weight: bold;
+    font-size: 45px;
+    padding-left: 0;
+    padding-bottom: 0%;
+  }
+  
+  /* .car-image {
+    position: absolute; 
+    width: 80%;
+    height: auto;
+    margin-left: 15%;
+    margin-top: 25%;
+    z-index: 2; 
+  } */
+  .car-image {
+    width: 94%;
+    margin-right: 5%;
+    margin-top: 20%;
+    right: 0px;
+    position: absolute; /* Allows the car to overlay the parking image */
+    transition: transform 3s ease; /* Transition for smooth movement */
+    transform: translateX(100%); /* Start position off the screen */
+    scroll-behavior: auto;
+  }
+  
+  .rectangle {
+    position: relative; /* Set position for pseudo-element */
+    width: 700px; /* Base width of the trapezium */
+    height: 0px; /* Height is set to 0 to use only borders */
+    border-left: 100px solid transparent; /* Creates left slant */
+    border-right: 0px solid transparent;
+    margin-bottom: 0%;
+  }
+  
+  .rectangle::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 500px; /* Height of the trapezium */
+    background: linear-gradient(to left, #f7e3c580 50%, #cecece 100%); /* Gradient */
+    clip-path: polygon(0 100%, 100% 100%, 75% 0, 25% 0); /* Adjust points for trapezium shape */
+  }
+  
+  .landing-button {
+    display: inline-block; /* Makes it behave like a button */
+    margin-top: 20px; /* Adjust as needed */
+    padding: 17px 30px; /* Adjust padding */
+    color: #ffffff;
+    width: 20vh;
+    background-color: rgb(0, 0, 0); /* Text color */
+    text-decoration: none;
+    text-align: center;
+    border: none; /* Remove border */
+    border-radius: 50px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+    margin-right:20%;
+    transition: color 0.3s ease, background-color 0.3s ease, transform 0.3s ease;
+  }
+  
+  .landing-button:hover{
+    color: #e5cb0b;
+    transform: translateY(0px);
+  }
+  .hero-image {
+    position: relative;
+    width: 1000px; 
+    height: 400px; 
+    overflow:visible; 
+    margin-left:10%;
+  }
+  
+  .park-image {
+    position: absolute;
+    bottom: 215px;
+    left: 0;
+    right: 100px;
+    width: 40%; /* Adjust as needed */
+    z-index: 1; /* Behind the car image */
+    opacity: 0; /* Start hidden */
+    transition: opacity 5s ease; /* Smooth opacity transition */
+  }
+  
+  @keyframes slide-in {
+    to {
+      right: 0%; /* Adjust this to where you want the car to stop */
+    }
+  }
+  
+  .car-image.loaded {
+    transform: translateX(0); /* Move to original position */
+  }
+  .park-image.visible {
+    opacity: 1; /* Show parking image when the class is added */
+  }
+  /* Container for the ticker */
+  .ticker-container {
+    width: 100%;
+    /* overflow: hidden; */
+    background-color: black;
+    padding: 50px 0; 
+  }
+  
+  /* Text styling and animation */
+  .ticker-text {
+    /* display: inline-block; */
+    white-space: nowrap;
+    color: rgb(255, 255, 255);
+    font-size: 1.5rem; 
+    /* font-weight: bold; */
+    animation: scroll 6s linear infinite;
+    
+  }
+  
+  .ticker-text span {
+    display: inline-block;
+    padding-left: 100%; /* Start position for smooth scrolling */
+  }
+  
+  /* Keyframes for the scrolling effect */
+  @keyframes scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+  .image1{
+    height:90vh;
+  }
+  .image11{
+    width:100%;
+  }
+  /* .image2{
+    height:90vh;
+    right:50%;
+  } */
+  .secondpage {
+    background-image: linear-gradient(to bottom, #d0d0d0 0%, #ededed 100%);
+    margin: 0;
+    /* padding: 150px 0 0; */
+    right:50%;
+  }
+  .tagline {
+    font-family: UberMove, UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-style: bold;
+    position: absolute;
+    width: 80rem;
+    top: 160%; 
+    left: 91%; 
+    transform: translate(-50%, -50%); 
+    color: #ffffff; 
+    font-size: 47px; 
+    text-align:left; 
+    z-index: 1; 
+    opacity: 0.9; 
+    transition: opacity 0.3s ease; 
+  }
+  .animation {
+    position: absolute;
+    top:166%;
+    left: 55%;
+    height: 90px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    font-size: 5rem;
+    z-index: 4;
+    align-items: center;
+    text-shadow: 0 0 7px rgba(60, 57, 57, 0.3), 0 0 3px rgba(60, 57, 57, 0.3);
+  }
+  
+  .animation > div > div {
+    padding: 0.25rem 0.75rem;
+    height: 3.81rem;
+    display: inline-block;
+  }
+  
+  .animation div:first-child {
+    animation: text-animation 8s infinite;
+  }
+  .first div {
+    color: #e5cb0b;
+  }
+  .second div {
+    color: #e5cb0b; /* Yellow */
+  }
+  .third div {
+    color: #e5cb0b; /* Green */
+  }
+  @keyframes text-animation {
+    0% {margin-top: -1rem;}
+    10% {margin-top: -1rem;}
+    20% {margin-top: -7.1rem;}
+    30% {margin-top: -7.1rem;}
+    40% {margin-top: -13.84rem;}
+    60% {margin-top: -13.84rem;}
+    70% {margin-top: -7.1rem;}
+    80% {margin-top: -7.1rem;}
+    90% {margin-top: -1rem;}
+    100% {margin-top: -1rem;}
+  }

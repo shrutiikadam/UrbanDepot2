@@ -1,3 +1,4 @@
+
 // src/components/Login.js
 import React, { useState, useEffect } from "react";
 import { auth, googleProvider } from "../firebaseConfig";
@@ -38,7 +39,7 @@ const Login = () => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       if (userCredential.user.emailVerified) {
         alert("Login successful!");
-        navigate("/"); 
+        navigate("/map"); 
       } else {
         alert("Please verify your email before logging in.");
       }
@@ -84,7 +85,7 @@ const Login = () => {
     <div className={`form-container ${isSignUp ? "show-signup" : "show-login"}`}>
   <div className="col col-1">
     <div className="image-layer">
-      <img src="/car.png" className="car-bg" />
+      <img src="car.png" className="car-bg" />
     </div>
     <p className="words">Few Seconds Away From Solving Parking Issue!</p>
   </div>

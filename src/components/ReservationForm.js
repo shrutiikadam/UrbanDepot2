@@ -7,6 +7,7 @@ import { storage } from '../firebaseConfig';
 import Tesseract from 'tesseract.js'; // Import Tesseract.js
 import './ReservationForm.css';
 
+
 // Generate time options
 const generateTimeOptions = () => {
   const options = [];

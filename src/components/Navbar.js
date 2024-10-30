@@ -18,14 +18,8 @@ const Navbar = ({ userEmail }) => {
     <nav>
       <h1>Map App</h1>
       <div className="nav-links">
-        <Link to="/">HOME</Link>
+        <Link to="/map">HOME</Link>
         <Link to="/register-place">REGISTER PLACE</Link>
-        <Link to="/reservation">RESERVATION</Link>
-        <Link to="/payment">PAYMENT</Link>
-        <Link to="/signup">SIGNUP</Link>
-        <Link to="/login">LOGIN</Link>
-        <Link to="/demo">DEMO</Link>
-        <Link to="/ticket">TICKET</Link>
         <Link to="/profile">PROFILE</Link>
       </div>
       {userEmail && (
