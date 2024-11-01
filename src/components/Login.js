@@ -5,19 +5,23 @@ import { auth, googleProvider } from "../firebaseConfig";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
   sendEmailVerification,
   signInWithPopup,
   onAuthStateChanged,
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import styles from './Login.css';
+import 'boxicons/css/boxicons.min.css';
+
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [currentUserEmail, setCurrentUserEmail] = useState(null); 
-  const [isSignUp, setIsSignUp] = useState(false);  // To toggle between login and signup forms
+  const [currentUserEmail, setCurrentUserEmail] = useState(null);
+  const [isSignUp, setIsSignUp] = useState(false); // To toggle between login and signup forms
+  const [showForgotPassword, setShowForgotPassword] = useState(false); // To toggle the forgot password form
   const navigate = useNavigate();
 
   // Check if a user is logged in and update the email state
@@ -75,6 +79,16 @@ const Login = () => {
       alert(`Error: ${error.message}`);
     }
   };
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    try {
+      await sendPasswordResetEmail(auth, email);
+      alert("Password reset email sent! Check your inbox.");
+      setShowForgotPassword(false); // Hide the forgot password form after sending the email
+    } catch (error) {
+      alert(`Error: ${error.message}`);
+    }
+  };
 
   const handleToggle = () => {
     setIsSignUp(!isSignUp);  // Toggle between SignIn and SignUp
@@ -96,7 +110,7 @@ const Login = () => {
         className={`btn ${!isSignUp ? "btn-1" : ""}`}
         onClick={() => setIsSignUp(false)}
       >
-        Sign In
+        LOG IN
       </button>
       <button
         className={`btn ${isSignUp ? "btn-2" : ""}`}
@@ -109,9 +123,8 @@ const Login = () => {
     {/* Sign-Up Form */}
     <div className={`register-form ${isSignUp ? "active" : ""}`}>
       <div className="form-title">
-        <span>Sign Up</span>
+        <span>SIGN UP</span>
       </div>
-      {currentUserEmail && <p>Logged in as: {currentUserEmail}</p>}
       <form onSubmit={handleSignUp}>
         <div className="form-inputs">
           <div className="input-box">
@@ -147,21 +160,25 @@ const Login = () => {
             />
             <i className="bx bx-lock-alt icon"></i>
           </div>
+          <div className="forgot-box">
+            <a href="#">Forgot Password?</a>
+          </div>
           <button className="input-submit" type="submit">
             <span>Sign Up</span>
             <i className="bx bx-right-arrow-alt"></i>
           </button>
         </div>
-        <div className="social-login">
-          <i className="bx bxl-google"></i>
-          <i className="bx bxl-facebook"></i>
-          <i className="bx bxl-twitter"></i>
-          <i className="bx bxl-github"></i>
-        </div>
+     
       </form>
       <button className="google-btn" onClick={handleGoogleLogin}>
-        Continue with Google
-      </button>
+    <span className="google-icon">
+        <i className="bx bxl-google"></i> {/* Google icon */}
+    </span>
+    <span>Continue with Google</span> {/* Text in a separate span */}
+</button>
+
+
+
     </div>
 
     {/* Sign-In Form */}
@@ -169,7 +186,6 @@ const Login = () => {
       <div className="form-title">
         <span>LOGIN</span>
       </div>
-      {currentUserEmail && <p>Logged in as: {currentUserEmail}</p>}
       <form onSubmit={handleLogin}>
         <div className="form-inputs">
           <div className="input-box">
@@ -202,16 +218,17 @@ const Login = () => {
             <i className="bx bx-right-arrow-alt"></i>
           </button>
         </div>
-        <div className="social-login">
-          <i className="bx bxl-google"></i>
-          <i className="bx bxl-facebook"></i>
-          <i className="bx bxl-twitter"></i>
-          <i className="bx bxl-github"></i>
-        </div>
+       
       </form>
       <button className="google-btn" onClick={handleGoogleLogin}>
-        Continue with Google
-      </button>
+    <span className="google-icon">
+        <i className="bx bxl-google"></i> {/* Google icon */}
+    </span>
+    <span>Continue with Google</span> {/* Text in a separate span */}
+</button>
+
+
+
     </div>
   </div>
 </div>

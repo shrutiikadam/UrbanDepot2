@@ -41,7 +41,7 @@ nav h1 {
     font-size: 20px; /* Increased font size */
     position: relative;
     padding: 20px 25px;
-    border-radius: 5px;
+    border-radius: 30px;
     transition: color 0.3s ease, background-color 0.3s ease, transform 0.3s ease;
 }
 
@@ -67,25 +67,54 @@ nav h1 {
 .hamburger-container:hover {
     color: #f2f2f2;
 }
-
 /* Dropdown Menu */
 .dropdown-menu {
     position: absolute;
     top: 40px; /* Position below the button */
     right: 8px;
     left: 0;
-    background-color: #cecece; /* Background for dropdown */
-    border-radius: 5px; /* Rounded corners */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    z-index: 1000; /* Make sure it is above other elements */
+    background-color: #1a1a1a; /* Darker background for dropdown */
+    border-radius: 20px; /* Smoother rounded corners */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Deeper shadow for a lifted look */
+    z-index: 1000; /* Ensure it is above other elements */
+    overflow: hidden; /* Trim any overflow for a clean look */
 }
 
-.dropdown-menu a {
-    display: block; /* Make links stack vertically */
-    padding: 10px 15px;
-    color: #000;
-    text-decoration: none;
+/* Dropdown Menu */
+.dropdown-menu {
+    position: absolute;
+    top: 48px; /* Shift dropdown a bit lower */
+    right: 8px;
+    left: 0;
+    background-color: #1a1a1a; /* Darker background for dropdown */
+    border-radius: 20px; /* Rounded corners */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Lifted shadow effect */
+    z-index: 1000;
+    overflow: hidden;
 }
+
+/* Dropdown Menu Links */
+.dropdown-menu a {
+    display: block;
+    padding: 12px 18px;
+    color: #cecece;
+    text-decoration: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin-bottom: 5px; /* Space between items */
+}
+
+/* Hover Effect */
+.dropdown-menu a:hover {
+    background-color: #333;
+    color: #e5cb0b;
+    cursor: pointer;
+}
+
+/* Remove margin after the last item */
+.dropdown-menu a:last-child {
+    margin-bottom: 0;
+}
+
 
 /* Hamburger Icon */
 .hamburger-icon {
@@ -120,7 +149,8 @@ nav h1 {
     color: #e5cb0b;
     background-color: rgb(0, 0, 0);
     transform: translateY(-2px);
-    border-radius: 30px;
+
+    border-radius: 30px; /* Keeps the curved border on hover */
 }
 
 /* User Info */

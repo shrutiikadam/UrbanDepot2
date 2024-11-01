@@ -138,29 +138,37 @@ const RegisterPlace = () => {
       alert("No user logged in to send email to!");
       return;
     }
-    
+  
     const templateParams = {
       to_email: userEmail,
       subject: "Place Registration Successful",
       message: `You have successfully registered a new place named "${placeName}" at address: ${address}.`,
     };
-
-    try {
-      await emailjs.send('service_jqajw2l', 'template_od7gyfk', templateParams, 'lmjzjf2u4E96BI8-H');
-      console.log('Email sent successfully');
-      toast.success("Email sent successfully!",{
-        style: {
-          backgroundColor: '#28a745', // Success green
-          color: '#fff',
-          fontSize: '16px',
-          borderRadius: '8px',
-        },
+  
+    // Start sending email in the background
+    emailjs.send('service_jqajw2l', 'template_od7gyfk', templateParams, 'lmjzjf2u4E96BI8-H')
+      .then(() => {
+        console.log('Email sent successfully');
+        toast.success("Email sent successfully!", {
+          style: {
+            backgroundColor: '#28a745',
+            color: '#fff',
+            fontSize: '16px',
+            borderRadius: '8px',
+          },
+        });
+      })
+      .catch((error) => {
+        console.error('Failed to send email:', error);
+        toast.error("Failed to send email.", {
+          style: {
+            fontSize: '16px',
+            borderRadius: '8px',
+          },
+        });
       });
-    } catch (error) {
-      console.error('Failed to send email:', error);
-      alert("Failed to send email.");
-    }
   };
+  
 
   const processOCR = async (file) => {
     try {

@@ -16,6 +16,27 @@ const Map = () => {
     const [directionsSteps, setDirectionsSteps] = useState([]); 
     const [loading, setLoading] = useState(true); // Loading state
 
+
+    const [defaultFromDate, setDefaultFromDate] = useState('');
+    const [defaultToDate, setDefaultToDate] = useState('');
+    const [defaultFromTime, setDefaultFromTime] = useState('');
+    const [defaultToTime, setDefaultToTime] = useState('');
+
+
+    useEffect(() => {
+        // Set default date and time values
+        const today = new Date();
+        const todayDate = today.toISOString().split('T')[0]; // YYYY-MM-DD format
+        const currentTime = today.toTimeString().split(' ')[0].slice(0, 5); // HH:MM format
+        const oneHourLater = new Date(today.getTime() + 60 * 60 * 1000);
+        const oneHourLaterTime = oneHourLater.toTimeString().split(' ')[0].slice(0, 5); // HH:MM format
+        
+        setDefaultFromDate(todayDate);
+        setDefaultToDate(todayDate);
+        setDefaultFromTime(currentTime);
+        setDefaultToTime(oneHourLaterTime);
+    }, []);
+
     const onFetchPlaces = (newPlaces) => {
         console.log("Fetched places:", newPlaces);
         setPlaces(newPlaces);
@@ -77,7 +98,7 @@ const Map = () => {
         geocoder.geocode({ address: searchInput }, (results, status) => {
             if (status === "OK" && results[0]) {
                 const searchLocation = results[0].geometry.location;
-                const searchRadius = 10000; // 10 km radius
+                const searchRadius = 1000000; // 10 km radius
     
                 // Filter places within the search radius based on distance to search location
                 const filteredPlaces = places.filter((place) => {
@@ -111,6 +132,13 @@ const Map = () => {
         const toTimeDate = new Date(`1970-01-01T${toTime}:00Z`);
         const fromDateObj = new Date(fromDate);
         const toDateObj = new Date(toDate);
+
+        console.log("Filtering with criteria:");
+        console.log("From Time:", fromTimeDate);
+        console.log("To Time:", toTimeDate);
+        console.log("From Date:", fromDateObj);
+        console.log("To Date:", toDateObj);
+        console.log("Selected Access Type:", selectedAccessType);
     
         // Filter based on criteria, using only places within the search radius
         const finalFilteredPlaces = filteredPlaces.filter(place => {
@@ -124,6 +152,15 @@ const Map = () => {
             const isDateValid = placeDateRangeFrom <= toDateObj && placeDateRangeTo >= fromDateObj;
             const isAccessTypeValid = selectedAccessType === "" || place.accessType === selectedAccessType;
     
+
+            console.log(`Checking place: ${place.name} (ID: ${place.id})`);
+        console.log("  Availability:", place.availability);
+        console.log("  Date Range:", place.dateRange);
+        console.log("  Is Time Valid:", isTimeValid);
+        console.log("  Is Date Valid:", isDateValid);
+        console.log("  Is Access Type Valid:", isAccessTypeValid);
+
+
             return isTimeValid && isDateValid && isAccessTypeValid;
         });
     
@@ -140,6 +177,7 @@ const Map = () => {
         setSearchMarkers([]);
     
         filteredPlaces.forEach(place => {
+             console.log(`Adding marker for place: ${place.id} at coordinates: ${place.lat}, ${place.lng}`); // Log details
             const marker = new window.google.maps.Marker({
                 position: { lat: place.lat, lng: place.lng },
                 map: mapInstance,
@@ -243,24 +281,24 @@ const Map = () => {
             <div className="date">
                 <div className="from-date">
                     <label>From Date:</label>
-                    <input type="date" id="from-date" />
+                    <input type="date" id="from-date" defaultValue={defaultFromDate} />
                 </div>
                 <div class="divider"></div>
                 <div className="to-date">
                     <label>To Date:</label>
-                    <input type="date" id="to-date" />
+                    <input type="date" id="to-date" defaultValue={defaultToDate} />
                 </div>
             </div>    
             <div className="time">
                 <div className="from-time">
                     <label>From Time:</label>
-                    <input type="time" id="from-time" />
+                    <input type="time" id="from-time" defaultValue={defaultFromTime} />
                     </div>
                     <div class="divider"></div>
                     <div className="to-time">
                         <label>To Time:</label>
-                        <input type="time" id="to-time" />
-                    </div>
+                        <input type="time" id="to-time" defaultValue={defaultToTime} />
+                        </div>
                 </div>
                 
                 <button onClick={searchNearbyPlaces}>

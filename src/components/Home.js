@@ -54,11 +54,17 @@ function Home() {
       </div>
    
       </div>
-         <div class="ticker-container">
-  <div class="ticker-text">
-    <span>Parking Available</span>
+      <div className="ticker-container">
+  <div className="ticker-text">
+    <span>
+      🚗 Parking Available - Grab Your Spot Now! &nbsp;&nbsp;&nbsp;
+      🚙 Fast, Easy, Secure Parking! &nbsp;&nbsp;&nbsp;
+      📍 Reserve in Real-Time! &nbsp;&nbsp;&nbsp;
+      🅿️ Stress-Free Parking Solution at Your Fingertips!
+    </span>
   </div>
 </div>
+
 <div className='image1'>
 <img
     src="image1.png"

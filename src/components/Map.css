@@ -34,7 +34,7 @@
 
 .map-search h5{
     font-size: 3.8vh;
-    margin-top: 2vh;
+    margin-top: 0; /* Remove top margin */
     font-weight: bold;
 }
 
@@ -51,7 +51,7 @@
 .park-search-div {
     height: 12%;
     border: 1px solid #ccc;
-    border-radius:7px;
+    border-radius:12px;
     padding: 1vh 3vh;
     display: flex;
     flex-direction:column;
@@ -65,7 +65,7 @@
 {
     height: 11%;
     border: 1px solid #ccc;
-    border-radius:7px;
+    border-radius:12px;
     padding: 0.7vh 3.5vh 0.7vh 3.5vh;
     text-align: start;
     display: flex;
@@ -115,9 +115,10 @@
 .map-search button {
     padding: 10px; 
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 20px;
     width: 100%; /* Ensure full width */
     box-sizing: border-box; 
+    font-size: 17px;
 }
 
 .map-search input,
@@ -137,15 +138,16 @@
 }
 
 .map-search button {
-    background-color: #4CAF50;
-    color: white;
+    background-color: #000000;
+    color: gold;
     cursor: pointer;
     margin-block: inherit;
     transition: background-color 0.3s ease; /* Smooth transition for hover */
 }
 
 .map-search button:hover {
-    background-color: #45a049;
+    background-color: #c1b532;
+    color: #000000;
 }
 
 /* Popup styles for selected place */

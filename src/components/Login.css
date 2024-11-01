@@ -1,17 +1,17 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
-*{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Poppins',sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
+
 /* body */
-.login-page{
-    /* background-image: url("./images/bg1.png"); */
-background-color: rgb(10, 9, 9);  
-  background-position: center;
+.login-page {
+    background-image: url("./images/graphic.png");
+    background-color: rgb(10, 9, 9);
+    background-position: center;
     background-size: cover;
     background-attachment: fixed;
     background-repeat: no-repeat;
@@ -23,31 +23,30 @@ background-color: rgb(10, 9, 9);
 }
 
 /* form */
-.form-container{
-   display: flex;
-   width: 1000px;
+.form-container {
+    display: flex;
+    width: 1000px;
     height: 600px;
     border: 3px solid rgba(255, 255, 255, 0.3);
-    border-radius:30px;
+    border-radius: 30px;
     backdrop-filter: blur(20px);
 }
 
-.col-1{
+.col-1 {
     display: flex;
     align-items: center;
     justify-content: flex-end;
     flex-direction: column;
-    width:55%;
-    background:rgba(255, 255, 255, 0.3);
+    width: 55%;
+    background: rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(30px);
     border-radius: 5% 30% 20% 5%;
     transition: border-radius .3s ease-in-out;
     padding: 30px;
     overflow: hidden;
-    position: relative;
 }
 
-.image-layer{
+.image-layer {
     position: relative;
     display: flex;
     justify-content: center;
@@ -55,9 +54,7 @@ background-color: rgb(10, 9, 9);
     overflow: hidden;
 }
 
-
-.car-bg{
-    /* position: absolute; */
+.car-bg {
     width: 800px;
     max-width: 700px;
     height: 800px;
@@ -66,140 +63,162 @@ background-color: rgb(10, 9, 9);
     padding: 0;
 }
 
-/* animation image */
-
-
-.words{
+/* Adjusted spacing for titles */
+.words {
     text-align: center;
-    color:#ffff;
+    color: #ffff;
     width: 300px;
     margin-top: auto;
     margin-bottom: 50px;
 }
 
 /* col-2 styling */
-.col-2{
+.col-2 {
     position: relative;
     width: 45%;
     padding: 20px;
     overflow: hidden;
 }
 
-.btn-box{
-    display: flex;   
+.btn-box {
+    display: flex;
     justify-content: center;
-    gap:10px;
+    gap: 10px;
     margin-top: 20px;
 }
 
-.btn{
+.btn {
     font-weight: 500;
     padding: 5px 30px;
-    border:none;
-    border-radius:30px;
+    border: none;
+    border-radius: 30px;
     background: rgba(255, 255, 255, 0.2);
-    color:#ffff;
-    box-shadow: 0 5px 10px rgba(0,0,0, 0.2);
+    color: #ffff;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
     cursor: pointer;
     transition: .2s;
 }
 
-.btn-1{
+.btn-1 {
     background: #21264D;
 }
-.btn:hover{
-    opacity: 0.85;
+.btn-2 {
+    background: #21264D;
 }
+.btn:hover {
+    opacity: 0.85; /* Shared hover effect */
+}
+
 /* login */
-.login-form{
+.login-form {
     position: absolute;
-    left:50%;
+    left: 50%;
     transform: translateX(-50%);
     display: flex;
     flex-direction: column;
     align-items: stretch;
     width: 100%;
-    padding:0 4vw;
-    transition:left .3s ease;
+    margin-top: -0px;
+    padding: 0 4vw;
+    transition: left .3s ease;
 }
+
 /* register */
-.register-form{
+.register-form {
     position: absolute;
-    left:150%;
+    left: 150%;
     transform: translateX(-50%);
     display: flex;
     flex-direction: column;
     align-items: stretch;
     width: 100%;
-    padding:0 4vw;
-    transition:left .3s ease;
+    padding: 0 4vw;
+    transition: left .3s ease;
 }
+
 .show-signup .register-form {
     left: 50%; /* Move it to the center */
 }
+
 .show-signup .login-form {
     left: -50%; /* Move it off-screen to the left */
 }
-.register-form .form-title{
-    margin-block:40px 20px ;
-}
-.form-title{
-    margin:40px 0;
-    color:#ffff;
-    font-size:28px;
+
+.register-form .form-title {
+    margin: 20px 0; /* Increased margin for more space */
+    color: #ffff;
+    font-size: 28px;
     font-weight: 600;
     text-align: center;
 }
-.form-inputs{
+
+
+.form-title {
+    margin: 40px 0; /* Increased margin for more space (adjust value as needed) */
+    color: #ffff;
+    font-size: 28px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.form-inputs {
     width: 100%;
 }
-.input-box{
+
+.input-box {
     position: relative;
-    width:100%;
+    width: 100%;
 }
-.input-field{
+
+.input-field {
     width: 100%;
     height: 55px;
     padding: 0 15px;
-    margin:10px 0;
-    color:#ffff;
-    background:rgba(255, 255, 255, 0.2);
-    border:none;
+    margin: 10px 0;
+    color: #ffff;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
     border-radius: 10px;
     outline: none;
     backdrop-filter: blur(20px);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);  
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
-::placeholder{
+
+::placeholder {
     color: #ffff;
     font-size: 15px;
 }
-.input-box .icon{
+
+.input-box .icon {
     position: absolute;
-    top:50%;
+    top: 50%;
     right: 15px;
     transform: translateY(-50%);
     color: #ffff;
 }
-.forgot-box{
+
+.forgot-box {
     display: flex;
     justify-content: right;
-    gap:5px;
+    gap: 5px;
 }
-.forgot-box a{
+
+.forgot-box a {
     color: #ffff;
     text-decoration: none;
-    font-size:14px;
+    font-size: 14px;
 }
-.forgot-box a:hover{
+
+.forgot-box a:hover {
     text-decoration: underline;
 }
-.input-submit{
+
+.input-submit {
     display: flex;
-    align-items:center ;
+    align-items: center;
     justify-content: center;
-    gap:10px;
-    width:100%;
+    gap: 10px;
+    width: 100%;
     height: 55px;
     padding: 0 15px;
     margin: 10px 0;
@@ -211,28 +230,42 @@ background-color: rgb(10, 9, 9);
     cursor: pointer;
     transition: .3s;
 }
-.input-submit:hover{
+
+.input-submit:hover {
     gap: 15px;
 }
-.social-login{
-    display:flex;
-    justify-content: center;
-    gap:20px;
-    margin-top: 20px;
-}
-.social-login i{
+
+.google-btn {
     display: flex;
     align-items: center;
-    justify-content: center;
-    height: 40px;
-    width: 40px;
-    color: #ffff;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
+    justify-content: center; /* Center the content */
+    background: #db4437; /* Google red color */
+    color: #ffffff; /* White text color */
+    border: none;
+    border-radius: 10px;
+    width: 100%; /* Full width */
+    height: 55px; /* Same height as other buttons */
     cursor: pointer;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    transition: .2s;
+    transition: 0.3s;
+    margin-top: 10px; /* Space above the button */
+    box-shadow: none; /* Remove shadow effect */
 }
-.social-login i:hover{
-    transform:scale(0.9);
+
+.google-btn:hover {
+    background: #971c0c; /* Darker shade of Google red for hover */
+    opacity: 0.95; /* Slight opacity change */
 }
+
+.google-icon {
+    margin-right: 8px; /* Space between icon and text */
+    font-size: 30px; /* Icon size */
+
+}
+
+/* Optional: Adjust span styles if needed */
+.google-btn span {
+    display: flex; /* Ensure span is also a flex container */
+    align-items: center; /* Center the icon and text vertically */
+    margin-left: -9px;
+}
+

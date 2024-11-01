@@ -84,7 +84,7 @@ const SignUp = () => {
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
         />
-        <button type="submit">Sign Up</button>
+        <button type="submit">SIGN UP</button>
       </form>
       <button className="google-btn" onClick={handleGoogleSignUp}>
         Continue with Google

@@ -1,5 +1,7 @@
 body{
-    background-color: #ffffff;}/* Wrapper to center the ticket without shifting the navbar */
+    /* background: linear-gradient(to left, #f7e3c580 50%, #cecece 100%); */
+    background:rgb(243, 237, 237);
+}
     .ticket-wrapper {
         display: flex;
         justify-content: center;  /* Center horizontally */
