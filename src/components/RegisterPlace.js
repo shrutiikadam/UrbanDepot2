@@ -10,6 +10,7 @@ import Tesseract from 'tesseract.js';
 import { toast, ToastContainer } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css';
 import './toastStyles.css'; 
+import FileUpload from './FileUpload';
 
 const mapsApiKey = process.env.REACT_APP_MAPS_API_KEY;
 
@@ -30,6 +31,8 @@ const RegisterPlace = () => {
   const [userEmail, setUserEmail] = useState('');
   const [userName, setUserName] = useState(''); 
   const [currentStep, setCurrentStep] = useState(1);
+  const [ownerEmail, setOwnerEmail] = useState('');
+
   
   const [aashaarcard, setAadharCard] = useState(null);
   const [nocLetter, setNocLetter] = useState(null);
@@ -48,14 +51,16 @@ const RegisterPlace = () => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUserEmail(user.email);
+        setOwnerEmail(user.email); // Set the ownerEmail to the logged-in user's email
         setUserName(user.displayName || user.email.split('@')[0]);
       } else {
         setErrorMessage('No user is logged in. Please log in to register a place.');
       }
     });
-
+  
     return () => unsubscribe();
   }, []);
+  
 
   useEffect(() => {
     const loadScript = (src) => {
@@ -163,14 +168,9 @@ const RegisterPlace = () => {
         logger: (m) => console.log(m), // Log progress
       });
       console.log('Extracted text:', text); // Log extracted text to the console
-      toast.success("Text extracted successfully!", {
-        style: {
-          backgroundColor: '#28a745',
-          color: '#fff',
-          fontSize: '16px',
-          borderRadius: '8px',
-        },
-      });
+  
+      // Validate Aadhaar after extracting text
+      validateAadhaarCard(text);
     } catch (error) {
       console.error('Error during OCR processing:', error);
       toast.error("Failed to extract text from the document.", {
@@ -221,6 +221,7 @@ const RegisterPlace = () => {
         placeName,
         address,
         name,
+        ownerEmail,
         parking_number: parkingNumber || 'N/A',
         availability: { from: fromTime, to: toTime },
         dateRange: { from: fromDate, to: toDate },
@@ -250,44 +251,38 @@ const RegisterPlace = () => {
       setErrorMessage('Error registering place. Please try again.');
     }
   };  
-
-  const handleFileChange = (e, setter) => {
-    const file = e.target.files[0];
+  const handleFileChange = (file, setter, isAadhar = false) => {
+    console.log("Received file:", file); // Debugging: log the received file
     setter(file);
-    processOCR(file);
-};
-
-// Function to validate Aadhaar number format
-const isValidAadhaar = (aadhaarNumber) => {
-  const aadhaarPattern = /^[2-9]{1}[0-9]{11}$/;
-  return aadhaarPattern.test(aadhaarNumber);
-};
-
-// Function to check if it is an Aadhaar card by looking for keywords
-const isAadhaarCard = (ocrText) => {
-  const keywords = [ "Aadhaar"];
   
-  // Check if at least one of the keywords is found in the OCR text
-  return keywords.some(keyword => ocrText.includes(keyword));
-};
-
+    // Only run OCR and Aadhaar validation for the Aadhaar field
+    if (isAadhar) {
+      processOCR(file)
+        .then(() => console.log("OCR processed for Aadhaar card")) // Logging the OCR for Aadhaar
+        .catch((error) => console.error("OCR processing failed:", error));
+    }
+  };
+  
+  
+  // Adjusted validateAadhaarCard to avoid running on other fields
 // Function to validate Aadhaar card by checking the number and keywords
 const validateAadhaarCard = (ocrText) => {
   const aadhaarNumberMatch = ocrText.match(/\b[2-9]{1}[0-9]{11}\b/);
   
-  if (aadhaarNumberMatch && isValidAadhaar(aadhaarNumberMatch[0]) && isAadhaarCard(ocrText)) {
+  // Check for Aadhaar-related keywords directly within the validate function
+  const keywords = ["Aadhaar", "Government of India", "Unique Identification"];
+  const hasAadhaarKeywords = keywords.some((keyword) => ocrText.includes(keyword));
+
+  if (aadhaarNumberMatch && hasAadhaarKeywords) {
+    toast.success("The uploaded document is a valid Aadhaar card.");
     console.log("The uploaded document is a valid Aadhaar card.");
-    // You can proceed with further logic here if it’s a valid Aadhaar card
+    return true;
   } else {
+    toast.error("The uploaded document is not a valid Aadhaar card.");
     console.log("The uploaded document is not a valid Aadhaar card.");
-    // Handle invalid Aadhaar card case
+    return false;
   }
 };
-
-// Example usage with OCR extracted text
-const ocrText = "Unique Identification Authority of India, Government of India, 234567890123, DOB: 01/01/1990";
-validateAadhaarCard(ocrText);
-
 
   return (
     <div className='form123'>
@@ -300,6 +295,23 @@ validateAadhaarCard(ocrText);
             {/* Step 1: Basic Information */}
             {currentStep === 1 && (
               <div className="step">
+                <div className="your-name">
+      <label>Name:</label>
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        required
+      />
+    </div>
+    <div className="register-place-email">
+      <label>Email:</label>
+      <input
+        type="email"
+        value={ownerEmail} // Use the auto-filled email
+         // Make the field read-only if you want to prevent editing
+      />
+    </div>
                 <div className="register-place-name">
                   <label>Place Name:</label>
                   <input
@@ -318,15 +330,7 @@ validateAadhaarCard(ocrText);
                     required
                   />
                 </div>
-                <div className="your-name">
-                  <label>Name:</label>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
-                </div>
+                
                 <div className="button-container">
                   <button type="button" onClick={() => setCurrentStep(2)}>Next</button>
                 </div>
@@ -336,22 +340,35 @@ validateAadhaarCard(ocrText);
             {/* Step 2: Document Uploads */}
             {currentStep === 2 && (
               <div className="step">
-                <div className="register-place-documents">
-                <label>Upload Aadhaar Card:</label>
-                <input type="file" onChange={(e) => handleFileChange(e, setAadharCard, true)} accept="image/*" required />
-                </div>
-                <div className="register-place-documents">
-                  <label>Upload NOC Letter:</label>
-                  <input type="file" onChange={(e) => handleFileChange(e, setNocLetter)} accept="image/*" required />
-                </div>
-                <div className="register-place-documents">
-                  <label>Upload Building Permission Letter:</label>
-                  <input type="file" onChange={(e) => handleFileChange(e, setBuildingPermission)} accept="image/*" required />
-                </div>
-                <div className="register-place-documents">
-                  <label>Upload Picture of the Place:</label>
-                  <input type="file" onChange={(e) => handleFileChange(e, setPlacePicture)} accept="image/*" required />
-                </div>
+               <FileUpload
+  id="aadhar"
+  label="Upload Aadhaar Card:"
+  required
+  onFileChange={(file) => handleFileChange(file, setAadharCard, true)} // Trigger Aadhaar validation
+/>
+
+<FileUpload
+  id="noc"
+  label="Upload NOC Letter:"
+  required
+  onFileChange={(file) => handleFileChange(file, setNocLetter)} // No Aadhaar validation here
+/>
+
+<FileUpload
+  id="buildingPermission"
+  label="Upload Building Permission Letter: (if applicable)"
+  required
+  onFileChange={(file) => handleFileChange(file, setBuildingPermission)} // Correctly handle Building Permission
+/>
+
+<FileUpload
+  id="placePicture"
+  label="Upload Picture of the Place:"
+  required
+  onFileChange={(file) => handleFileChange(file, setPlacePicture)} // Correctly handle Place Picture
+/>
+
+
                 <div className="button-container">
                   <button type="button" onClick={() => setCurrentStep(1)}>Back</button>
                   <button type="button" onClick={() => setCurrentStep(3)}>Next</button>

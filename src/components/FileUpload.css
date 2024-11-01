@@ -1,0 +1,29 @@
+.file-upload {
+    margin-bottom: 20px;
+  }
+  
+  .drop-box {
+    width: 100%;
+    max-width: 400px; /* Set max width for the drop box */
+    height: 200px; /* Fixed height for controlled vertical space */
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    overflow-y: auto; /* Enable vertical scroll */
+    display: flex;
+    align-items: flex-start; /* Align content at the top */
+    justify-content: center;
+    position: relative;
+  }
+  
+  .preview-section {
+    width: 100%; /* Full width of the drop-box */
+    display: flex;
+    justify-content: center;
+  }
+  
+  .preview-img {
+    width: 100%; /* Fit image to the box width */
+    height: auto; /* Auto height to maintain aspect ratio */
+    object-fit: contain; /* Ensure the entire width fits */
+  }
+  

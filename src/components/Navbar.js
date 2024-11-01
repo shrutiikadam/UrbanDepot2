@@ -16,7 +16,7 @@ const Navbar = ({ userEmail }) => {
 
   return (
     <nav>
-      <h1>Map App</h1>
+      <h1><strong>URBANDEPOT</strong></h1>
       <div className="nav-links">
         <Link to="/map">HOME</Link>
         <Link to="/register-place">REGISTER PLACE</Link>

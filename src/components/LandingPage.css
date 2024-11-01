@@ -1,57 +1,231 @@
-/* @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+/* LandingPage.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Bruno+Ace&display=swap');
+
+body {
+  font-family: "Bruno Ace", sans-serif;
+  margin: 0;
+  overflow: hidden;
+}
 
 .main {
-  position: relative;
-  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   height: 100vh;
+  width: 100%;
+  position: relative;
+  color: #ffffff;
+  transition: opacity 1.2s ease, transform 1.2s ease; /* Smooth transition */
 }
 
-.overlaying {
+.fade-out {
+  opacity: 0;
+  transform: translateY(-60px) scale(0.95); /* Upward slide and scale down slightly */
+}
+
+/* Text Overlay */
+.overlay-text {
   position: absolute;
-  top: 48%;
-  left: 70%;
-  transform: translate(-50%, -70%);
-  color: white;
-  text-align: left;
-}
-
-.overlaying h1 {
-  font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-  font-size: 3rem;
-  color: #fff;
-  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
-  margin-bottom: 20px;
-}
-
-
-.sign-in-btn {
-  font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-  font-size: 1.2rem;
-  background-color: #0f0d8f; 
-  border: none;
-  color: white;
-  padding: 12px 24px;
+  z-index: 10;
   text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  margin: 10px 0;
-  cursor: pointer;
-  border-radius: 8px; 
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+  top: 7%;
+  width: 80%;
+  max-width: 800px;
+  transition: transform 1.2s ease, opacity 1.2s ease;
+  animation: fadeIn 1.2s ease forwards;
+  opacity: 0;
 }
 
-.sign-in-btn:hover {
-  background-color: #4b45a0; 
-  box-shadow: 0 0 20px rgba(114, 200, 253, 0.7), 0 0 30px rgba(247, 255, 247, 0.5);
+.overlay-text h1,
+.overlay-text p {
+  opacity: 0;
+  transform: translateY(20px); /* Initial downward position for slide-in effect */
+  animation: slideIn 1s ease forwards;
 }
 
-.sign-in-btn.glow {
-  box-shadow: 0 0 20px rgba(35, 149, 255, 0.7), 0 0 30px rgba(86, 202, 255, 0.5);
+.overlay-text h1 {
+  font-size: 3rem;
+  margin: 0;
+  text-transform: uppercase;
+  font-weight: bold;
+  line-height: 1.2;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+  animation-delay: 0.5s;
 }
 
-iframe {
+.overlay-text h1 span {
+  color: #e91e63;
+  animation: pulse 1.5s infinite alternate;
+}
+
+.overlay-text p {
+  font-size: 1.5rem;
+  font-weight: 300;
+  margin-top: 10px;
+  color: #eeeeee;
+  animation-delay: 0.8s;
+}
+
+/* Background Animation */
+.background-iframe {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.background-iframe iframe {
   width: 100%;
   height: 100%;
   border: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  filter: brightness(0.8);
+  transition: transform 1.2s ease;
+}
+
+.fade-out .background-iframe iframe {
+  transform: scale(0.98) translateY(-30px); /* Subtle zoom-out and upward slide */
+}
+
+/* Keyframes */
+@keyframes slideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.05);
+  }
+}
+
+
+
+/* 
+
+@import url('https://fonts.googleapis.com/css2?family=Bruno+Ace&display=swap');
+
+body {
+  font-family: "Bruno Ace", sans-serif;
+  margin: 0;
+  overflow: hidden;
+}
+
+.main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  position: relative;
+  color: #ffffff;
+  transition: opacity 1.2s ease, transform 1.2s ease;
+}
+
+.fade-out {
+  opacity: 0;
+  transform: translateX(-100vw) rotateY(10deg); 
+
+}
+.overlay-text {
+  position: absolute;
+  z-index: 10;
+  text-align: center;
+  color: #ffffff;
+  top: 7%;
+  width: 80%;
+  max-width: 800px;
+  transition: transform 1.2s ease, opacity 1.2s ease;
+  animation: fadeIn 1.2s ease forwards;
+  opacity: 0;
+}
+
+.overlay-text h1,
+.overlay-text p {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slideIn 1s ease forwards;
+}
+
+.overlay-text h1 {
+  font-size: 3rem;
+  margin: 0;
+  text-transform: uppercase;
+  font-weight: bold;
+  line-height: 1.2;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+  animation-delay: 0.5s;
+}
+
+.overlay-text h1 span {
+  color: #e91e63;
+  animation: pulse 1.5s infinite alternate;
+}
+
+.overlay-text p {
+  font-size: 1.5rem;
+  font-weight: 300;
+  margin-top: 10px;
+  color: #eeeeee;
+  animation-delay: 0.8s;
+}
+
+.background-iframe {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.background-iframe iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  filter: brightness(0.8);
+  transition: transform 1.2s ease;
+}
+
+.fade-out .background-iframe iframe {
+  transform: translateX(-100vw) rotateY(10deg);\
+}
+
+
+@keyframes slideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.05);
+  }
 } */

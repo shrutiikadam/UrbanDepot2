@@ -9,8 +9,9 @@
 }
 /* body */
 .login-page{
-    background-image: url("./images/bg1.png");
-    background-position: center;
+    /* background-image: url("./images/bg1.png"); */
+background-color: rgb(10, 9, 9);  
+  background-position: center;
     background-size: cover;
     background-attachment: fixed;
     background-repeat: no-repeat;

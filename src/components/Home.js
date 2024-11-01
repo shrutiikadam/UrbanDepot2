@@ -18,6 +18,8 @@ function Home() {
 
     return () => clearTimeout(timer);
   }, []);
+
+  
   return (
     <div classname="Landing-Page">
     <div className="landing">
@@ -33,7 +35,7 @@ function Home() {
   <div className='firstline'>take you straight to your spot!</div>
   <div className='secondline1'><p className='secondline1'>Discover the easiest way to find and reserve parking in real-time—quick, convenient, and stress-free.</p></div>
   <div className="nav-links1">
-    <Link to="/search" className="landing-button">Search Now</Link>
+    <Link to="/map" className="landing-button">Search Now</Link>
   </div>
   </div>
 </div>
@@ -73,16 +75,10 @@ function Home() {
         <div class="third"><div>Reliable</div></div>
         </section>
       </div>
-        
       </div>
+      
 
 </div>
-{/* <div className='image2'>
-<img
-    src="image2.png"
-    alt="img2"
-    className="image22"/>
-</div> */}
       </div>
       
   

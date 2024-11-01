@@ -37,7 +37,13 @@ const App = () => {
 
   return (
     <div>
-      {location.pathname === '/home' ? <NavHome /> : <Navbar />}
+      {/* Conditionally render Navbar/NavHome based on path */}
+      {location.pathname === '/home' ? (
+        <NavHome />
+      ) : location.pathname !== '/' && location.pathname !== '/login' ? ( // Added condition to hide Navbar on login
+        <Navbar />
+      ) : null}
+      
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/payment" element={<RazorpayPayment />} />
@@ -49,7 +55,7 @@ const App = () => {
         <Route path="/profile" element={<Profile />} />
         <Route path="/ticket" element={<Ticket userEmail={userEmail} />} />
         <Route path="/fetch" element={<FetchPlaceName />} />
-        <Route path='/map' element={<Map/>} />
+        <Route path='/map' element={<Map />} />
         <Route path='/adminpage' element={<AdminPage />} />
         <Route path='/adminside' element={<AdminSidebar />} />
         <Route path='/home' element={<Home />} />

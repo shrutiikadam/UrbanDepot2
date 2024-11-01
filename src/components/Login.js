@@ -52,7 +52,7 @@ const Login = () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       alert("Google login successful!");
-      navigate("/");
+      navigate("/map");
     } catch (error) {
       alert(`Google Login Error: ${error.message}`);
     }
@@ -102,7 +102,7 @@ const Login = () => {
         className={`btn ${isSignUp ? "btn-2" : ""}`}
         onClick={() => setIsSignUp(true)}
       >
-        Sign Up
+        SIGN UP
       </button>
     </div>
 
@@ -167,7 +167,7 @@ const Login = () => {
     {/* Sign-In Form */}
     <div className={`login-form ${!isSignUp ? "active" : ""}`}>
       <div className="form-title">
-        <span>Sign In</span>
+        <span>LOGIN</span>
       </div>
       {currentUserEmail && <p>Logged in as: {currentUserEmail}</p>}
       <form onSubmit={handleLogin}>
@@ -198,7 +198,7 @@ const Login = () => {
             <a href="#">Forgot Password?</a>
           </div>
           <button className="input-submit" type="submit">
-            <span>Sign In</span>
+            <span>LOG IN</span>
             <i className="bx bx-right-arrow-alt"></i>
           </button>
         </div>
